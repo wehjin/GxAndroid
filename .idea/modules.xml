@@ -2,7 +2,7 @@
 <project version="4">
   <component name="ProjectModuleManager">
     <modules>
-      <module fileurl="file://$PROJECT_DIR$/Peregrine.iml" filepath="$PROJECT_DIR$/Peregrine.iml" />
+      <module fileurl="file://$PROJECT_DIR$/GxAndroid.iml" filepath="$PROJECT_DIR$/GxAndroid.iml" />
       <module fileurl="file://$PROJECT_DIR$/lib/lib.iml" filepath="$PROJECT_DIR$/lib/lib.iml" />
     </modules>
   </component>
