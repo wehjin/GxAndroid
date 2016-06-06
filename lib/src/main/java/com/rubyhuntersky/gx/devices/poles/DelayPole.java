@@ -39,7 +39,7 @@ public class DelayPole extends Pole implements DelayDevice<Pole> {
 
     @NonNull
     @Override
-    public Patch addPatch(Frame frame, Shape shape, int argbColor) {
+    public Patch addPatch(@NonNull Frame frame, @NonNull Shape shape, int argbColor) {
         if (didEndDelay) {
             return super.addPatch(frame, shape, argbColor);
         }

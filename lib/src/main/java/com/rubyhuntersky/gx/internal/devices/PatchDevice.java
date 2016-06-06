@@ -16,11 +16,11 @@ import com.rubyhuntersky.gx.internal.shapes.Shape;
 
 public interface PatchDevice {
     @NonNull
-    Patch addPatch(Frame frame, Shape shape, int argbColor);
+    Patch addPatch(@NonNull Frame frame, @NonNull Shape shape, int argbColor);
 
     @NonNull
-    TextSize measureText(String text, TextStyle textStyle);
+    TextSize measureText(@NonNull String text, @NonNull TextStyle textStyle);
 
     @NonNull
-    ShapeSize measureShape(Shape shape);
+    ShapeSize measureShape(@NonNull Shape shape);
 }

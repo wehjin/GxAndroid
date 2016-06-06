@@ -59,19 +59,19 @@ public class PatchDeviceView extends FrameLayout implements PatchDevice {
 
     @NonNull
     @Override
-    public TextSize measureText(String text, TextStyle textStyle) {
+    public TextSize measureText(@NonNull String text, @NonNull TextStyle textStyle) {
         return textRuler.measure(text, textStyle);
     }
 
     @NonNull
     @Override
-    public ShapeSize measureShape(Shape shape) {
+    public ShapeSize measureShape(@NonNull Shape shape) {
         return shapeRuler.measure(shape);
     }
 
     @NonNull
     @Override
-    public Patch addPatch(Frame frame, Shape shape, int argbColor) {
+    public Patch addPatch(@NonNull Frame frame, @NonNull Shape shape, int argbColor) {
         if (shape instanceof RectangleShape) {
             return getRectanglePatch(frame, (RectangleShape) shape, argbColor);
         } else if (shape instanceof TextShape) {

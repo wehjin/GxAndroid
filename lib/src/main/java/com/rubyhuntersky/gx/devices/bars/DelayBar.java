@@ -38,7 +38,7 @@ public class DelayBar extends Bar implements DelayDevice<Bar> {
 
     @NonNull
     @Override
-    public Patch addPatch(Frame frame, Shape shape, int argbColor) {
+    public Patch addPatch(@NonNull Frame frame, @NonNull Shape shape, int argbColor) {
         if (didEndDelay) {
             return basis.addPatch(frame, shape, argbColor);
         }

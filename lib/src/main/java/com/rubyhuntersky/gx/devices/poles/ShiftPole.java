@@ -44,7 +44,7 @@ public class ShiftPole extends Pole implements ShiftDevice<Pole> {
 
     @NonNull
     @Override
-    public Patch addPatch(Frame frame, Shape shape, int argbColor) {
+    public Patch addPatch(@NonNull Frame frame, @NonNull Shape shape, int argbColor) {
         final FrameShiftPatch patch = new FrameShiftPatch(frame, shape, argbColor, basis);
         if (didShift) {
             patch.setShift(horizontalShift, verticalShift);

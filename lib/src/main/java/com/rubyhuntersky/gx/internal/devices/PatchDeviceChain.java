@@ -22,19 +22,19 @@ public class PatchDeviceChain implements PatchDevice {
 
     @NonNull
     @Override
-    public Patch addPatch(Frame frame, Shape shape, int argbColor) {
+    public Patch addPatch(@NonNull Frame frame, @NonNull Shape shape, int argbColor) {
         return basis.addPatch(frame, shape, argbColor);
     }
 
     @NonNull
     @Override
-    public TextSize measureText(String text, TextStyle textStyle) {
+    public TextSize measureText(@NonNull String text, @NonNull TextStyle textStyle) {
         return basis.measureText(text, textStyle);
     }
 
     @NonNull
     @Override
-    public ShapeSize measureShape(Shape shape) {
+    public ShapeSize measureShape(@NonNull Shape shape) {
         return basis.measureShape(shape);
     }
 }

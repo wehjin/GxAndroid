@@ -29,19 +29,19 @@ public class BarUnitTest {
 
             @NonNull
             @Override
-            public Patch addPatch(Frame frame, Shape shape, int argbColor) {
+            public Patch addPatch(@NonNull Frame frame, @NonNull Shape shape, int argbColor) {
                 return Patch.EMPTY;
             }
 
             @NonNull
             @Override
-            public TextSize measureText(String text, TextStyle textStyle) {
+            public TextSize measureText(@NonNull String text, @NonNull TextStyle textStyle) {
                 return TextSize.ZERO;
             }
 
             @NonNull
             @Override
-            public ShapeSize measureShape(Shape shape) {
+            public ShapeSize measureShape(@NonNull Shape shape) {
                 return ShapeSize.ZERO;
             }
         };

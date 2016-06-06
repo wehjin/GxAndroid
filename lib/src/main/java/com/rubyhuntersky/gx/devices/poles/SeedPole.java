@@ -21,13 +21,13 @@ abstract public class SeedPole extends Pole {
 
     @NonNull
     @Override
-    abstract public Patch addPatch(Frame frame, Shape shape, int argbColor);
+    abstract public Patch addPatch(@NonNull Frame frame, @NonNull Shape shape, int argbColor);
 
     @NonNull
     @Override
-    abstract public TextSize measureText(String text, TextStyle textStyle);
+    abstract public TextSize measureText(@NonNull String text, @NonNull TextStyle textStyle);
 
     @NonNull
     @Override
-    abstract public ShapeSize measureShape(Shape shape);
+    abstract public ShapeSize measureShape(@NonNull Shape shape);
 }

@@ -4,10 +4,10 @@ import android.content.Context;
 import android.support.annotation.NonNull;
 import android.util.AttributeSet;
 
-import com.rubyhuntersky.gx.presentations.Presentation;
 import com.rubyhuntersky.gx.devices.poles.Pole;
 import com.rubyhuntersky.gx.internal.devices.DelayDevice;
 import com.rubyhuntersky.gx.internal.devices.ShiftDevice;
+import com.rubyhuntersky.gx.presentations.Presentation;
 
 /**
  * @author wehjin
@@ -21,20 +21,20 @@ public class PoleView extends FixedDimensionDeviceView<Pole> {
 
     public PoleView(Context context) {
         super(context);
-        init();
+        initPoleView();
     }
 
     public PoleView(Context context, AttributeSet attrs) {
         super(context, attrs);
-        init();
+        initPoleView();
     }
 
     public PoleView(Context context, AttributeSet attrs, int defStyleAttr) {
         super(context, attrs, defStyleAttr);
-        init();
+        initPoleView();
     }
 
-    private void init() {
+    private void initPoleView() {
         pole = new Pole(0, 0, 0, this);
     }
 
