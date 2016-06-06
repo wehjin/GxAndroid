@@ -40,7 +40,8 @@ open class MainActivity : AppCompatActivity() {
     @BindView(R.id.main_frame)
     lateinit var mainFrame: FrameLayout
 
-    fun FrameLayout.toPatchDevice(): FrameLayoutPatchDevice = FrameLayoutPatchDevice(this)
+    fun FrameLayout.toPole(): Pole = Pole(width.toFloat(), 0f, 0, FrameLayoutPatchDevice(this))
+
     val human by lazy { AndroidHuman(this) }
     val moreIndicator: Div0 by lazy {
         val moreMarker = textTile("▼", IMPORTANT_DARK)
@@ -68,8 +69,6 @@ open class MainActivity : AppCompatActivity() {
     fun onWidth(container: FrameLayout, left: Int, right: Int) {
         Log.d(tag, "onWidth left $left right $right")
 
-        val patchDevice = container.toPatchDevice()
-        val pole = Pole((right - left).toFloat(), 0f, 0, patchDevice)
         val menuLauncher = textColumn("Account 1234", TITLE_DARK)
                 .padBottom(READABLE)
                 .expandDown(textColumn("Buy 20 shares", READABLE_DARK))
@@ -77,14 +76,14 @@ open class MainActivity : AppCompatActivity() {
                 .expandDown(textColumn("and", READABLE_DARK))
                 .padBottom(Sizelet.readables(3f))
                 .expandDown(textColumn("Add funds $3398.29", TITLE_DARK))
-                .placeBefore(moreIndicator, patchDevice.elevationPixels, .5f)
+                .placeBefore(moreIndicator, 1, .5f)
                 .padVertical(READABLE)
 
         val div = colorColumn(FINGER, GREEN)
                 .expandDown(colorColumn(FINGER, BLUE))
                 .expandDown(menuLauncher)
 
-        div.present(human, pole, object : Observer {
+        div.present(human, container.toPole(), object : Observer {
             override fun onReaction(reaction: Reaction?) {
                 Log.d(tag, "onReaction $reaction")
             }
