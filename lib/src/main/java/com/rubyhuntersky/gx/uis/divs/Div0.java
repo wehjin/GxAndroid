@@ -8,12 +8,12 @@ import com.rubyhuntersky.gx.basics.Sizelet;
 import com.rubyhuntersky.gx.devices.poles.Pole;
 import com.rubyhuntersky.gx.devices.poles.ShiftPole;
 import com.rubyhuntersky.gx.internal.presenters.BasePresenter;
-import com.rubyhuntersky.gx.uis.OnPresent;
 import com.rubyhuntersky.gx.internal.presenters.Presenter;
 import com.rubyhuntersky.gx.observers.Observer;
 import com.rubyhuntersky.gx.presentations.Presentation;
 import com.rubyhuntersky.gx.presentations.ResizePresentation;
 import com.rubyhuntersky.gx.reactions.Reaction;
+import com.rubyhuntersky.gx.uis.OnPresent;
 import com.rubyhuntersky.gx.uis.core.Ui0;
 import com.rubyhuntersky.gx.uis.divs.operations.ExpandDownDivOperation1;
 import com.rubyhuntersky.gx.uis.divs.operations.ExpandVerticalDivOperation0;
@@ -114,6 +114,10 @@ public abstract class Div0 implements Ui0<Pole> {
 
     public Div0 placeBefore(@NonNull final Div0 background, final int gap) {
         return new PlaceBeforeDivOperation0(background, gap).apply(this);
+    }
+
+    public Div0 placeBefore(@NonNull final Div0 background, final int gap, final float anchor) {
+        return new PlaceBeforeDivOperation0(background, gap, anchor).apply(this);
     }
 
     public Div1<Div0> expandDown() {

@@ -13,17 +13,14 @@ import butterknife.BindView
 import butterknife.ButterKnife
 import com.rubyhuntersky.coloret.Coloret.BLUE
 import com.rubyhuntersky.coloret.Coloret.GREEN
-import com.rubyhuntersky.gx.Gx
-import com.rubyhuntersky.gx.Gx.colorColumn
+import com.rubyhuntersky.gx.Gx.*
 import com.rubyhuntersky.gx.android.AndroidHuman
 import com.rubyhuntersky.gx.android.ShapeRuler
 import com.rubyhuntersky.gx.android.TextRuler
-import com.rubyhuntersky.gx.basics.Frame
-import com.rubyhuntersky.gx.basics.ShapeSize
+import com.rubyhuntersky.gx.basics.*
 import com.rubyhuntersky.gx.basics.Sizelet.FINGER
-import com.rubyhuntersky.gx.basics.TextSize
-import com.rubyhuntersky.gx.basics.TextStyle
-import com.rubyhuntersky.gx.basics.TextStylet.TITLE_DARK
+import com.rubyhuntersky.gx.basics.Sizelet.READABLE
+import com.rubyhuntersky.gx.basics.TextStylet.*
 import com.rubyhuntersky.gx.devices.poles.Pole
 import com.rubyhuntersky.gx.internal.devices.PatchDevice
 import com.rubyhuntersky.gx.internal.patches.Patch
@@ -33,6 +30,7 @@ import com.rubyhuntersky.gx.internal.shapes.TextShape
 import com.rubyhuntersky.gx.internal.shapes.ViewShape
 import com.rubyhuntersky.gx.observers.Observer
 import com.rubyhuntersky.gx.reactions.Reaction
+import com.rubyhuntersky.gx.uis.divs.Div0
 
 open class MainActivity : AppCompatActivity() {
     companion object {
@@ -41,6 +39,17 @@ open class MainActivity : AppCompatActivity() {
 
     @BindView(R.id.main_frame)
     lateinit var mainFrame: FrameLayout
+
+    fun FrameLayout.toPatchDevice(): FrameLayoutPatchDevice = FrameLayoutPatchDevice(this)
+    val human by lazy { AndroidHuman(this) }
+    val moreIndicator: Div0 by lazy {
+        val moreMarker = textTile("▼", IMPORTANT_DARK)
+        val moreMarkerInset = .1f
+        val leftMarker = moreMarker.toColumn(moreMarkerInset)
+        val rightMarker = moreMarker.toColumn(1f - moreMarkerInset)
+        val moreIndicator = leftMarker.placeBefore(rightMarker, 0)
+        moreIndicator
+    }
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -58,12 +67,24 @@ open class MainActivity : AppCompatActivity() {
 
     fun onWidth(container: FrameLayout, left: Int, right: Int) {
         Log.d(tag, "onWidth left $left right $right")
-        val human = AndroidHuman(this)
-        val patchDevice: PatchDevice = FrameLayoutPatchDevice(container)
+
+        val patchDevice = container.toPatchDevice()
+        val pole = Pole((right - left).toFloat(), 0f, 0, patchDevice)
+        val menuLauncher = textColumn("Account 1234", TITLE_DARK)
+                .padBottom(READABLE)
+                .expandDown(textColumn("Buy 20 shares", READABLE_DARK))
+                .padBottom(READABLE)
+                .expandDown(textColumn("and", READABLE_DARK))
+                .padBottom(Sizelet.readables(3f))
+                .expandDown(textColumn("Add funds $3398.29", TITLE_DARK))
+                .placeBefore(moreIndicator, patchDevice.elevationPixels, .5f)
+                .padVertical(READABLE)
+
         val div = colorColumn(FINGER, GREEN)
                 .expandDown(colorColumn(FINGER, BLUE))
-                .expandDown(Gx.textColumn("Hello", TITLE_DARK))
-        div.present(human, Pole((right - left).toFloat(), 0f, 0, patchDevice), object : Observer {
+                .expandDown(menuLauncher)
+
+        div.present(human, pole, object : Observer {
             override fun onReaction(reaction: Reaction?) {
                 Log.d(tag, "onReaction $reaction")
             }

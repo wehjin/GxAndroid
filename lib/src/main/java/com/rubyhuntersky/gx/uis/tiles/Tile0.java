@@ -7,10 +7,10 @@ import com.rubyhuntersky.gx.devices.mosaics.Mosaic;
 import com.rubyhuntersky.gx.devices.mosaics.ShiftMosaic;
 import com.rubyhuntersky.gx.internal.interchange.ToColumnOperation;
 import com.rubyhuntersky.gx.internal.presenters.BasePresenter;
-import com.rubyhuntersky.gx.uis.OnPresent;
 import com.rubyhuntersky.gx.internal.presenters.Presenter;
 import com.rubyhuntersky.gx.observers.Observer;
 import com.rubyhuntersky.gx.presentations.Presentation;
+import com.rubyhuntersky.gx.uis.OnPresent;
 import com.rubyhuntersky.gx.uis.core.Ui0;
 import com.rubyhuntersky.gx.uis.divs.Div0;
 import com.rubyhuntersky.gx.uis.spans.Span0;
@@ -72,6 +72,10 @@ abstract public class Tile0 implements Ui0<Mosaic> {
 
     public Div0 toColumn() {
         return new ToColumnOperation().applyTo(this);
+    }
+
+    public Div0 toColumn(final float anchor) {
+        return new ToColumnOperation().applyTo(this, anchor);
     }
 
     public static Tile0 create(final OnPresent<Mosaic> onPresent) {
