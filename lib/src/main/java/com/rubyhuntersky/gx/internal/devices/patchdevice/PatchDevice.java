@@ -1,4 +1,4 @@
-package com.rubyhuntersky.gx.internal.devices;
+package com.rubyhuntersky.gx.internal.devices.patchdevice;
 
 import android.support.annotation.NonNull;
 

@@ -16,7 +16,7 @@ import com.rubyhuntersky.gx.basics.ShapeSize;
 import com.rubyhuntersky.gx.basics.TextHeight;
 import com.rubyhuntersky.gx.basics.TextSize;
 import com.rubyhuntersky.gx.basics.TextStyle;
-import com.rubyhuntersky.gx.internal.devices.PatchDevice;
+import com.rubyhuntersky.gx.internal.devices.patchdevice.PatchDevice;
 import com.rubyhuntersky.gx.internal.patches.Patch;
 import com.rubyhuntersky.gx.internal.shapes.RectangleShape;
 import com.rubyhuntersky.gx.internal.shapes.Shape;

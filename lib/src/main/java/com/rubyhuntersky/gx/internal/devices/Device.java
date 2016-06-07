@@ -2,6 +2,8 @@ package com.rubyhuntersky.gx.internal.devices;
 
 import android.support.annotation.NonNull;
 
+import com.rubyhuntersky.gx.internal.devices.patchdevice.PatchDevice;
+
 /**
  * @author wehjin
  * @since 1/28/16.

@@ -3,8 +3,8 @@ package com.rubyhuntersky.gx.devices.poles;
 import android.support.annotation.NonNull;
 
 import com.rubyhuntersky.gx.internal.devices.FixedDimensionDevice;
-import com.rubyhuntersky.gx.internal.devices.PatchDevice;
-import com.rubyhuntersky.gx.internal.devices.PatchDeviceChain;
+import com.rubyhuntersky.gx.internal.devices.patchdevice.PatchDevice;
+import com.rubyhuntersky.gx.internal.devices.patchdevice.PatchDeviceChain;
 
 /**
  * @author wehjin

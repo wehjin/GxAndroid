@@ -1,4 +1,4 @@
-package com.rubyhuntersky.gx.internal.devices;
+package com.rubyhuntersky.gx.internal.devices.patchdevice;
 
 import android.support.annotation.NonNull;
 
@@ -6,6 +6,7 @@ import com.rubyhuntersky.gx.basics.Frame;
 import com.rubyhuntersky.gx.basics.ShapeSize;
 import com.rubyhuntersky.gx.basics.TextSize;
 import com.rubyhuntersky.gx.basics.TextStyle;
+import com.rubyhuntersky.gx.internal.devices.patchdevice.PatchDevice;
 import com.rubyhuntersky.gx.internal.patches.Patch;
 import com.rubyhuntersky.gx.internal.shapes.Shape;
 

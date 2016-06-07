@@ -4,8 +4,8 @@ import android.support.annotation.NonNull;
 
 import com.rubyhuntersky.gx.internal.devices.Device;
 import com.rubyhuntersky.gx.internal.devices.DelayDevice;
-import com.rubyhuntersky.gx.internal.devices.PatchDevice;
-import com.rubyhuntersky.gx.internal.devices.PatchDeviceChain;
+import com.rubyhuntersky.gx.internal.devices.patchdevice.PatchDevice;
+import com.rubyhuntersky.gx.internal.devices.patchdevice.PatchDeviceChain;
 
 /**
  * @author wehjin
