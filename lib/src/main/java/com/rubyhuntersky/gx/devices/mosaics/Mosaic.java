@@ -4,22 +4,22 @@ import android.support.annotation.NonNull;
 
 import com.rubyhuntersky.gx.internal.devices.Device;
 import com.rubyhuntersky.gx.internal.devices.DelayDevice;
-import com.rubyhuntersky.gx.internal.devices.patchdevice.PatchDevice;
-import com.rubyhuntersky.gx.internal.devices.patchdevice.PatchDeviceChain;
+import com.rubyhuntersky.gx.internal.devices.screen.Screen;
+import com.rubyhuntersky.gx.internal.devices.screen.ScreenChain;
 
 /**
  * @author wehjin
  * @since 1/28/16.
  */
 
-public class Mosaic extends PatchDeviceChain implements Device<Mosaic> {
+public class Mosaic extends ScreenChain implements Device<Mosaic> {
 
     public final float relatedWidth;
     public final float relatedHeight;
     public final int elevation;
 
-    public Mosaic(float relatedWidth, float relatedHeight, int elevation, PatchDevice patchDevice) {
-        super(patchDevice);
+    public Mosaic(float relatedWidth, float relatedHeight, int elevation, Screen screen) {
+        super(screen);
         this.relatedWidth = relatedWidth;
         this.relatedHeight = relatedHeight;
         this.elevation = elevation;

@@ -3,7 +3,7 @@ package com.rubyhuntersky.gx.internal.patches;
 import android.support.annotation.NonNull;
 
 import com.rubyhuntersky.gx.basics.Frame;
-import com.rubyhuntersky.gx.internal.devices.patchdevice.PatchDevice;
+import com.rubyhuntersky.gx.internal.devices.screen.Screen;
 import com.rubyhuntersky.gx.internal.shapes.Shape;
 
 /**
@@ -15,12 +15,12 @@ public class DelayPatch implements Patch {
     private final Frame frame;
     private final Shape shape;
     private final int argbColor;
-    private final PatchDevice basis;
+    private final Screen basis;
     private Patch patch;
     private boolean didEndDelay;
     private boolean didRemove;
 
-    public DelayPatch(Frame frame, Shape shape, int argbColor, @NonNull PatchDevice basis) {
+    public DelayPatch(Frame frame, Shape shape, int argbColor, @NonNull Screen basis) {
 
         this.frame = frame;
         this.shape = shape;

@@ -16,7 +16,7 @@ import com.rubyhuntersky.gx.basics.ShapeSize;
 import com.rubyhuntersky.gx.basics.TextHeight;
 import com.rubyhuntersky.gx.basics.TextSize;
 import com.rubyhuntersky.gx.basics.TextStyle;
-import com.rubyhuntersky.gx.internal.devices.patchdevice.PatchDevice;
+import com.rubyhuntersky.gx.internal.devices.screen.Screen;
 import com.rubyhuntersky.gx.internal.patches.Patch;
 import com.rubyhuntersky.gx.internal.shapes.RectangleShape;
 import com.rubyhuntersky.gx.internal.shapes.Shape;
@@ -28,25 +28,25 @@ import com.rubyhuntersky.gx.internal.shapes.ViewShape;
  * @since 2/11/16.
  */
 
-public class PatchDeviceView extends FrameLayout implements PatchDevice {
+public class ScreenView extends FrameLayout implements Screen {
 
-    public static final String TAG = PatchDeviceView.class.getSimpleName();
+    public static final String TAG = ScreenView.class.getSimpleName();
     private TextRuler textRuler;
     private ShapeRuler shapeRuler;
     private int elevationPixels;
 
 
-    public PatchDeviceView(Context context) {
+    public ScreenView(Context context) {
         super(context);
         initPatchDeviceView(context);
     }
 
-    public PatchDeviceView(Context context, AttributeSet attrs) {
+    public ScreenView(Context context, AttributeSet attrs) {
         super(context, attrs);
         initPatchDeviceView(context);
     }
 
-    public PatchDeviceView(Context context, AttributeSet attrs, int defStyleAttr) {
+    public ScreenView(Context context, AttributeSet attrs, int defStyleAttr) {
         super(context, attrs, defStyleAttr);
         initPatchDeviceView(context);
     }
@@ -116,7 +116,7 @@ public class PatchDeviceView extends FrameLayout implements PatchDevice {
             @Override
             public void remove() {
                 Log.d(TAG, "Remove view: " + view + " frame: " + frame);
-                PatchDeviceView.this.removeView(view);
+                ScreenView.this.removeView(view);
             }
         };
     }

@@ -3,22 +3,22 @@ package com.rubyhuntersky.gx.devices.bars;
 import android.support.annotation.NonNull;
 
 import com.rubyhuntersky.gx.internal.devices.FixedDimensionDevice;
-import com.rubyhuntersky.gx.internal.devices.patchdevice.PatchDevice;
-import com.rubyhuntersky.gx.internal.devices.patchdevice.PatchDeviceChain;
+import com.rubyhuntersky.gx.internal.devices.screen.Screen;
+import com.rubyhuntersky.gx.internal.devices.screen.ScreenChain;
 
 /**
  * @author wehjin
  * @since 1/23/16.
  */
 
-public class Bar extends PatchDeviceChain implements FixedDimensionDevice<Bar> {
+public class Bar extends ScreenChain implements FixedDimensionDevice<Bar> {
 
     public final float fixedHeight;
     public final float relatedWidth;
     public final int elevation;
 
-    public Bar(float fixedHeight, float relatedWidth, int elevation, PatchDevice patchDevice) {
-        super(patchDevice);
+    public Bar(float fixedHeight, float relatedWidth, int elevation, Screen screen) {
+        super(screen);
         this.fixedHeight = fixedHeight;
         this.relatedWidth = relatedWidth;
         this.elevation = elevation;

@@ -17,7 +17,7 @@ import com.rubyhuntersky.gx.uis.tiles.Tile0;
  * @since 2/13/16.
  */
 
-public class TileView extends PatchDeviceView {
+public class TileView extends ScreenView {
 
     private AndroidHuman human;
     private Presentation presentation;

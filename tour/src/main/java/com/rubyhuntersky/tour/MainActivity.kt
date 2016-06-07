@@ -22,7 +22,7 @@ import com.rubyhuntersky.gx.basics.Sizelet.FINGER
 import com.rubyhuntersky.gx.basics.Sizelet.READABLE
 import com.rubyhuntersky.gx.basics.TextStylet.*
 import com.rubyhuntersky.gx.devices.poles.Pole
-import com.rubyhuntersky.gx.internal.devices.patchdevice.PatchDevice
+import com.rubyhuntersky.gx.internal.devices.screen.Screen
 import com.rubyhuntersky.gx.internal.patches.Patch
 import com.rubyhuntersky.gx.internal.shapes.RectangleShape
 import com.rubyhuntersky.gx.internal.shapes.Shape
@@ -40,7 +40,7 @@ open class MainActivity : AppCompatActivity() {
     @BindView(R.id.main_frame)
     lateinit var mainFrame: FrameLayout
 
-    fun FrameLayout.toPole(): Pole = Pole(width.toFloat(), 0f, 0, FrameLayoutPatchDevice(this))
+    fun FrameLayout.toPole(): Pole = Pole(width.toFloat(), 0f, 0, FrameLayoutScreen(this))
 
     val human by lazy { AndroidHuman(this) }
     val moreIndicator: Div0 by lazy {
@@ -104,7 +104,7 @@ open class MainActivity : AppCompatActivity() {
         Log.d(tag, "onResume mainFrame width $width")
     }
 
-    class FrameLayoutPatchDevice(val frameLayout: FrameLayout) : PatchDevice {
+    class FrameLayoutScreen(val frameLayout: FrameLayout) : Screen {
 
         val context = frameLayout.context
         val textRuler = TextRuler(context)

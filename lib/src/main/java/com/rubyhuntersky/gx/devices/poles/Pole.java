@@ -3,22 +3,22 @@ package com.rubyhuntersky.gx.devices.poles;
 import android.support.annotation.NonNull;
 
 import com.rubyhuntersky.gx.internal.devices.FixedDimensionDevice;
-import com.rubyhuntersky.gx.internal.devices.patchdevice.PatchDevice;
-import com.rubyhuntersky.gx.internal.devices.patchdevice.PatchDeviceChain;
+import com.rubyhuntersky.gx.internal.devices.screen.Screen;
+import com.rubyhuntersky.gx.internal.devices.screen.ScreenChain;
 
 /**
  * @author wehjin
  * @since 1/23/16.
  */
 
-public class Pole extends PatchDeviceChain implements FixedDimensionDevice<Pole> {
+public class Pole extends ScreenChain implements FixedDimensionDevice<Pole> {
 
     public final float fixedWidth;
     public final float relatedHeight;
     public final int elevation;
 
-    public Pole(float fixedWidth, float relatedHeight, int elevation, PatchDevice patchDevice) {
-        super(patchDevice);
+    public Pole(float fixedWidth, float relatedHeight, int elevation, Screen screen) {
+        super(screen);
         this.fixedWidth = fixedWidth;
         this.relatedHeight = relatedHeight;
         this.elevation = elevation;

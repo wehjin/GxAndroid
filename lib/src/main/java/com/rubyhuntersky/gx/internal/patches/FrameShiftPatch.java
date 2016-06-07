@@ -3,7 +3,7 @@ package com.rubyhuntersky.gx.internal.patches;
 import android.support.annotation.NonNull;
 
 import com.rubyhuntersky.gx.basics.Frame;
-import com.rubyhuntersky.gx.internal.devices.patchdevice.PatchDevice;
+import com.rubyhuntersky.gx.internal.devices.screen.Screen;
 import com.rubyhuntersky.gx.internal.shapes.Shape;
 
 /**
@@ -15,12 +15,12 @@ public class FrameShiftPatch implements Patch {
     private final Frame frame;
     private final Shape shape;
     private final int argbColor;
-    private final PatchDevice device;
+    private final Screen device;
     private Patch patch;
     private boolean didShift;
     private boolean didRemove;
 
-    public FrameShiftPatch(Frame frame, Shape shape, int argbColor, @NonNull PatchDevice device) {
+    public FrameShiftPatch(Frame frame, Shape shape, int argbColor, @NonNull Screen device) {
         this.frame = frame;
         this.shape = shape;
         this.argbColor = argbColor;

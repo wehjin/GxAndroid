@@ -19,7 +19,7 @@ import java.util.Map;
  * @since 1/23/16.
  */
 
-abstract public class FixedDimensionDeviceView<T extends FixedDimensionDevice<T>> extends PatchDeviceView implements FixedDimensionDevice<T> {
+abstract public class FixedDimensionDeviceView<T extends FixedDimensionDevice<T>> extends ScreenView implements FixedDimensionDevice<T> {
 
     public final String TAG = getClass().getSimpleName();
     private Human human = new AndroidHuman(getContext());

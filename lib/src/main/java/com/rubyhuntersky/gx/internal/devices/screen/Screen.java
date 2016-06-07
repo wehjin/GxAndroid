@@ -1,4 +1,4 @@
-package com.rubyhuntersky.gx.internal.devices.patchdevice;
+package com.rubyhuntersky.gx.internal.devices.screen;
 
 import android.support.annotation.NonNull;
 
@@ -14,7 +14,7 @@ import com.rubyhuntersky.gx.internal.shapes.Shape;
  * @since 1/29/16.
  */
 
-public interface PatchDevice {
+public interface Screen {
     @NonNull
     Patch addPatch(@NonNull Frame frame, @NonNull Shape shape, int argbColor);
 

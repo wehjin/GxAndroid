@@ -1,4 +1,4 @@
-package com.rubyhuntersky.gx.internal.devices.patchdevice;
+package com.rubyhuntersky.gx.internal.devices.screen;
 
 import android.support.annotation.NonNull;
 
@@ -6,7 +6,6 @@ import com.rubyhuntersky.gx.basics.Frame;
 import com.rubyhuntersky.gx.basics.ShapeSize;
 import com.rubyhuntersky.gx.basics.TextSize;
 import com.rubyhuntersky.gx.basics.TextStyle;
-import com.rubyhuntersky.gx.internal.devices.patchdevice.PatchDevice;
 import com.rubyhuntersky.gx.internal.patches.Patch;
 import com.rubyhuntersky.gx.internal.shapes.Shape;
 
@@ -14,10 +13,10 @@ import com.rubyhuntersky.gx.internal.shapes.Shape;
  * @author wehjin
  * @since 1/29/16.
  */
-public class PatchDeviceChain implements PatchDevice {
-    final protected PatchDevice basis;
+public class ScreenChain implements Screen {
+    final protected Screen basis;
 
-    public PatchDeviceChain(PatchDevice basis) {
+    public ScreenChain(Screen basis) {
         this.basis = basis;
     }
 
