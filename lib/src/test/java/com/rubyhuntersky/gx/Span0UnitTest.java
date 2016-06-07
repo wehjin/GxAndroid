@@ -9,11 +9,11 @@ import com.rubyhuntersky.gx.basics.TextStyle;
 import com.rubyhuntersky.gx.devices.bars.Bar;
 import com.rubyhuntersky.gx.devices.bars.SeedBar;
 import com.rubyhuntersky.gx.internal.patches.Patch;
-import com.rubyhuntersky.gx.uis.OnPresent;
 import com.rubyhuntersky.gx.internal.presenters.Presenter;
 import com.rubyhuntersky.gx.internal.shapes.Shape;
 import com.rubyhuntersky.gx.observers.Observer;
 import com.rubyhuntersky.gx.presentations.Presentation;
+import com.rubyhuntersky.gx.uis.OnPresent;
 import com.rubyhuntersky.gx.uis.spans.Span0;
 
 import org.junit.After;
@@ -77,7 +77,7 @@ public class Span0UnitTest {
     public void expandStart_movesEndFrame() throws Exception {
         final Span0 ui = colorBar(BLACK, pixels(30)).expandStart(colorBar(GREEN, pixels(50)));
         presentation = ui.present(human, bar, Observer.EMPTY);
-        assertEquals(50, frames.get(1).horizontal.start, .0001);
+        assertEquals(50, frames.get(1).getHorizontal().getStart(), .0001);
     }
 
     @Test
@@ -91,7 +91,7 @@ public class Span0UnitTest {
     public void padStart_movesFrame() throws Exception {
         final Span0 padStartUi = colorBar(BLACK, pixels(30)).padStart(pixels(10));
         presentation = padStartUi.present(human, bar, Observer.EMPTY);
-        assertEquals(10, frames.get(0).horizontal.start, .0001);
+        assertEquals(10, frames.get(0).getHorizontal().getStart(), .0001);
     }
 
     @Test

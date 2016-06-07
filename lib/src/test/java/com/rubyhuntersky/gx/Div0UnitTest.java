@@ -4,17 +4,18 @@ import android.support.annotation.NonNull;
 
 import com.rubyhuntersky.coloret.Coloret;
 import com.rubyhuntersky.gx.basics.Frame;
+import com.rubyhuntersky.gx.basics.Range;
 import com.rubyhuntersky.gx.basics.ShapeSize;
 import com.rubyhuntersky.gx.basics.TextSize;
 import com.rubyhuntersky.gx.basics.TextStyle;
 import com.rubyhuntersky.gx.devices.poles.Pole;
 import com.rubyhuntersky.gx.devices.poles.SeedPole;
 import com.rubyhuntersky.gx.internal.patches.Patch;
-import com.rubyhuntersky.gx.uis.OnPresent;
 import com.rubyhuntersky.gx.internal.presenters.Presenter;
 import com.rubyhuntersky.gx.internal.shapes.Shape;
 import com.rubyhuntersky.gx.observers.Observer;
 import com.rubyhuntersky.gx.presentations.Presentation;
+import com.rubyhuntersky.gx.uis.OnPresent;
 import com.rubyhuntersky.gx.uis.divs.Div0;
 
 import org.junit.After;
@@ -83,15 +84,16 @@ public class Div0UnitTest {
     public void expandVertical_movesFrameDown() throws Exception {
         final Div0 verticalExpansion = colorColumn(pixels(17), Coloret.BLACK).expandVertical(pixels(5));
         presentation = verticalExpansion.present(human, pole, Observer.EMPTY);
-        assertEquals(5, frames.get(0).vertical.start, .0001);
-        assertEquals(22, frames.get(0).vertical.end, .0001);
+        Range vertical = frames.get(0).getVertical();
+        assertEquals(5, vertical.getStart(), .0001);
+        assertEquals(22, vertical.getEnd(), .0001);
     }
 
     @Test
     public void padTop_addsPaddingToFrameTop() throws Exception {
         final Presentation present = padTopUi.present(human, pole, Observer.EMPTY);
         present.cancel();
-        assertEquals(15, frames.get(0).vertical.start, .001);
+        assertEquals(15, frames.get(0).getVertical().getStart(), .001);
     }
 
     @Test
@@ -118,7 +120,7 @@ public class Div0UnitTest {
               .expandDown(colorColumn(pixels(5), Coloret.GREEN));
 
         presentation = expandBottomWithColumn.present(human, pole, Observer.EMPTY);
-        assertEquals(10, frames.get(0).vertical.start, .001);
+        assertEquals(10, frames.get(0).getVertical().getStart(), .001);
     }
 
     @Test

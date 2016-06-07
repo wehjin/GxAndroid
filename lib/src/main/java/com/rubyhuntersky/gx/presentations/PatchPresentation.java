@@ -18,12 +18,12 @@ public class PatchPresentation extends BooleanPresentation {
 
     @Override
     public float getWidth() {
-        return frame.horizontal.toLength();
+        return frame.getHorizontal().toLength();
     }
 
     @Override
     public float getHeight() {
-        return frame.vertical.toLength();
+        return frame.getVertical().toLength();
     }
 
     @Override

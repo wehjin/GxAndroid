@@ -10,7 +10,7 @@ import com.rubyhuntersky.gx.internal.shapes.Shape;
  * @author wehjin
  * @since 1/24/16.
  */
-public class FrameShiftPatch implements Patch {
+public class ShiftPatch implements Patch {
 
     private final Frame frame;
     private final Shape shape;
@@ -20,7 +20,7 @@ public class FrameShiftPatch implements Patch {
     private boolean didShift;
     private boolean didRemove;
 
-    public FrameShiftPatch(Frame frame, Shape shape, int argbColor, @NonNull Screen device) {
+    public ShiftPatch(Frame frame, Shape shape, int argbColor, @NonNull Screen device) {
         this.frame = frame;
         this.shape = shape;
         this.argbColor = argbColor;

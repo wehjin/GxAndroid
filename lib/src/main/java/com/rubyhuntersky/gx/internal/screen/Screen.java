@@ -3,11 +3,13 @@ package com.rubyhuntersky.gx.internal.screen;
 import android.support.annotation.NonNull;
 
 import com.rubyhuntersky.gx.basics.Frame;
+import com.rubyhuntersky.gx.basics.Removable;
 import com.rubyhuntersky.gx.basics.ShapeSize;
 import com.rubyhuntersky.gx.basics.TextSize;
 import com.rubyhuntersky.gx.basics.TextStyle;
 import com.rubyhuntersky.gx.internal.patches.Patch;
 import com.rubyhuntersky.gx.internal.shapes.Shape;
+import com.rubyhuntersky.gx.internal.surface.Jester;
 
 /**
  * @author wehjin
@@ -23,4 +25,7 @@ public interface Screen {
 
     @NonNull
     ShapeSize measureShape(@NonNull Shape shape);
+
+    @NonNull
+    Removable addSurface(@NonNull Frame frame, @NonNull Jester jester);
 }

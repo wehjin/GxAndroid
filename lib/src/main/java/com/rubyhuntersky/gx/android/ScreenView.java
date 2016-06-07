@@ -12,16 +12,21 @@ import android.widget.TextView;
 
 import com.rubyhuntersky.gx.R;
 import com.rubyhuntersky.gx.basics.Frame;
+import com.rubyhuntersky.gx.basics.Range;
+import com.rubyhuntersky.gx.basics.Removable;
 import com.rubyhuntersky.gx.basics.ShapeSize;
 import com.rubyhuntersky.gx.basics.TextHeight;
 import com.rubyhuntersky.gx.basics.TextSize;
 import com.rubyhuntersky.gx.basics.TextStyle;
-import com.rubyhuntersky.gx.internal.screen.Screen;
 import com.rubyhuntersky.gx.internal.patches.Patch;
+import com.rubyhuntersky.gx.internal.screen.Screen;
 import com.rubyhuntersky.gx.internal.shapes.RectangleShape;
 import com.rubyhuntersky.gx.internal.shapes.Shape;
 import com.rubyhuntersky.gx.internal.shapes.TextShape;
 import com.rubyhuntersky.gx.internal.shapes.ViewShape;
+import com.rubyhuntersky.gx.internal.surface.Jester;
+
+import kotlin.NotImplementedError;
 
 /**
  * @author wehjin
@@ -85,6 +90,12 @@ public class ScreenView extends FrameLayout implements Screen {
     }
 
     @NonNull
+    @Override
+    public Removable addSurface(@NonNull Frame frame, @NonNull Jester jester) {
+        throw new NotImplementedError("addSurface");
+    }
+
+    @NonNull
     private Patch getRectanglePatch(Frame frame, RectangleShape rectangleShape, int argbColor) {
         final View view = new View(getContext());
         view.setBackgroundColor(argbColor);
@@ -123,15 +134,17 @@ public class ScreenView extends FrameLayout implements Screen {
 
     @NonNull
     private LayoutParams getPatchLayoutParams(Frame frame, float additionalHeight) {
-        final LayoutParams layoutParams = new FrameLayout.LayoutParams((int) frame.horizontal.toLength(),
-                                                                       (int) (frame.vertical.toLength() + additionalHeight));
-        layoutParams.leftMargin = (int) frame.horizontal.start;
-        layoutParams.topMargin = (int) frame.vertical.start;
+        Range horizontal = frame.getHorizontal();
+        Range vertical = frame.getVertical();
+        final LayoutParams layoutParams = new FrameLayout.LayoutParams((int) horizontal.toLength(),
+                                                                       (int) (vertical.toLength() + additionalHeight));
+        layoutParams.leftMargin = (int) horizontal.getStart();
+        layoutParams.topMargin = (int) vertical.getStart();
         return layoutParams;
     }
 
 
     private void setElevation(View view, Frame frame) {
-        ViewCompat.setElevation(view, elevationPixels * frame.elevation);
+        ViewCompat.setElevation(view, elevationPixels * frame.getElevation());
     }
 }

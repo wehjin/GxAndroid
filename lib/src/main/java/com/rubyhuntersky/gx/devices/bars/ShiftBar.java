@@ -4,7 +4,7 @@ import android.support.annotation.NonNull;
 
 import com.rubyhuntersky.gx.basics.Frame;
 import com.rubyhuntersky.gx.internal.devices.ShiftDevice;
-import com.rubyhuntersky.gx.internal.patches.FrameShiftPatch;
+import com.rubyhuntersky.gx.internal.patches.ShiftPatch;
 import com.rubyhuntersky.gx.internal.patches.Patch;
 import com.rubyhuntersky.gx.internal.shapes.Shape;
 
@@ -18,7 +18,7 @@ import java.util.List;
 public class ShiftBar extends Bar implements ShiftDevice<Bar> {
 
     private boolean didShift;
-    private List<FrameShiftPatch> pending = new ArrayList<>();
+    private List<ShiftPatch> pending = new ArrayList<>();
     private float verticalShift;
     private float horizontalShift;
 
@@ -33,9 +33,9 @@ public class ShiftBar extends Bar implements ShiftDevice<Bar> {
             didShift = true;
             this.horizontalShift = horizontalShift;
             this.verticalShift = verticalShift;
-            final List<FrameShiftPatch> toShift = new ArrayList<>(pending);
+            final List<ShiftPatch> toShift = new ArrayList<>(pending);
             pending.clear();
-            for (FrameShiftPatch patch : toShift) {
+            for (ShiftPatch patch : toShift) {
                 patch.setShift(horizontalShift, verticalShift);
             }
         }
@@ -45,7 +45,7 @@ public class ShiftBar extends Bar implements ShiftDevice<Bar> {
     @NonNull
     @Override
     public Patch addPatch(@NonNull Frame frame, @NonNull Shape shape, int argbColor) {
-        final FrameShiftPatch patch = new FrameShiftPatch(frame, shape, argbColor, basis);
+        final ShiftPatch patch = new ShiftPatch(frame, shape, argbColor, basis);
         if (didShift) {
             patch.setShift(horizontalShift, verticalShift);
         } else {

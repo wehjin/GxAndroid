@@ -9,24 +9,17 @@ import com.rubyhuntersky.gx.basics.Spot
 
 interface Jester {
 
-    fun getDownReaction(spot: Spot): Reaction
-    fun doDown(spot: Spot): Contact;
+    fun getContact(spot: Spot): Contact?;
 
     interface Contact {
 
         fun doCancel()
 
-        fun getMoveReaction(spot: Spot): Reaction
+        fun getMoveReaction(spot: Spot): MoveReaction
         fun doMove(spot: Spot): Contact
 
-        fun getUpReaction(spot: Spot): Reaction
+        fun getUpReaction(spot: Spot): UpReaction
         fun doUp(spot: Spot)
     }
 
-    enum class Reaction {
-        WATCH,
-        JOIN,
-        EXIT,
-        WIN
-    }
 }

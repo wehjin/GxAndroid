@@ -1,14 +1,21 @@
 package com.rubyhuntersky.gx.uis.divs;
 
 import android.support.annotation.NonNull;
+import android.util.Log;
 
 import com.rubyhuntersky.gx.Gx;
 import com.rubyhuntersky.gx.Human;
+import com.rubyhuntersky.gx.basics.Frame;
+import com.rubyhuntersky.gx.basics.Removable;
 import com.rubyhuntersky.gx.basics.Sizelet;
+import com.rubyhuntersky.gx.basics.Spot;
 import com.rubyhuntersky.gx.devices.poles.Pole;
 import com.rubyhuntersky.gx.devices.poles.ShiftPole;
 import com.rubyhuntersky.gx.internal.presenters.BasePresenter;
 import com.rubyhuntersky.gx.internal.presenters.Presenter;
+import com.rubyhuntersky.gx.internal.surface.Jester;
+import com.rubyhuntersky.gx.internal.surface.MoveReaction;
+import com.rubyhuntersky.gx.internal.surface.UpReaction;
 import com.rubyhuntersky.gx.observers.Observer;
 import com.rubyhuntersky.gx.presentations.Presentation;
 import com.rubyhuntersky.gx.presentations.ResizePresentation;
@@ -20,12 +27,17 @@ import com.rubyhuntersky.gx.uis.divs.operations.ExpandVerticalDivOperation0;
 import com.rubyhuntersky.gx.uis.divs.operations.PadHorizontalDivOperation0;
 import com.rubyhuntersky.gx.uis.divs.operations.PlaceBeforeDivOperation0;
 
+import org.jetbrains.annotations.NotNull;
+import org.jetbrains.annotations.Nullable;
+
 /**
  * @author wehjin
  * @since 1/23/16.
  */
 
 public abstract class Div0 implements Ui0<Pole> {
+
+    static final String TAG = Div0.class.getSimpleName();
 
     static final public Div0 EMPTY = new Div0() {
         @Override
@@ -63,6 +75,96 @@ public abstract class Div0 implements Ui0<Pole> {
     }
 
     public abstract Presentation present(Human human, Pole pole, Observer observer);
+
+    public Div0 enableClick() {
+        final Div0 upstream = this;
+        return create(new OnPresent<Pole>() {
+            @Override
+            public void onPresent(Presenter<Pole> presenter) {
+                final Human human = presenter.getHuman();
+                final Pole pole = presenter.getDevice();
+                Presentation presentation = upstream.present(human, pole, presenter);
+                presenter.addPresentation(presentation);
+
+                final Frame frame = new Frame(presentation.getWidth(), presentation.getHeight(), pole.elevation);
+                final Removable removable = pole.addSurface(frame, new Jester() {
+                    @Nullable
+                    @Override
+                    public Contact getContact(@NotNull final Spot downSpot) {
+
+                        return new Contact() {
+                            @Override
+                            public void doCancel() {
+                                Log.d(TAG, "doCancel");
+                            }
+
+                            @NotNull
+                            @Override
+                            public MoveReaction getMoveReaction(@NotNull Spot spot) {
+                                if (isOutOfBounds(spot)) {
+                                    return MoveReaction.CANCEL;
+                                } else {
+                                    return MoveReaction.CONTINUE;
+                                }
+                            }
+
+                            private boolean isOutOfBounds(@NotNull Spot spot) {
+                                return spot.distanceSquared(downSpot) > 100;
+                            }
+
+                            @NotNull
+                            @Override
+                            public Contact doMove(@NotNull Spot spot) {
+                                return this;
+                            }
+
+                            @NotNull
+                            @Override
+                            public UpReaction getUpReaction(@NotNull Spot spot) {
+                                if (isOutOfBounds(spot)) {
+                                    return UpReaction.CANCEL;
+                                } else {
+                                    return UpReaction.CONFIRM;
+                                }
+                            }
+
+                            @Override
+                            public void doUp(@NotNull Spot spot) {
+                                Log.d(TAG, "doUp " + System.currentTimeMillis());
+                            }
+                        };
+                    }
+                });
+                presenter.addPresentation(new Presentation() {
+
+                    boolean cancelled = false;
+
+                    @Override
+                    public float getWidth() {
+                        return frame.getHorizontal().toLength();
+                    }
+
+                    @Override
+                    public float getHeight() {
+                        return frame.getVertical().toLength();
+                    }
+
+                    @Override
+                    public boolean isCancelled() {
+                        return cancelled;
+                    }
+
+                    @Override
+                    public void cancel() {
+                        if (!cancelled) {
+                            cancelled = true;
+                            removable.remove();
+                        }
+                    }
+                });
+            }
+        });
+    }
 
     public Div0 padHorizontal(final Sizelet padlet) {
         return new PadHorizontalDivOperation0(padlet).apply(this);
