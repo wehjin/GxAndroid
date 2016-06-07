@@ -1,4 +1,4 @@
-package com.rubyhuntersky.gx.internal.devices.screen;
+package com.rubyhuntersky.gx.internal.screen;
 
 import android.support.annotation.NonNull;
 

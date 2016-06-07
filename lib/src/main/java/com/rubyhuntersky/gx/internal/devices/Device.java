@@ -2,7 +2,7 @@ package com.rubyhuntersky.gx.internal.devices;
 
 import android.support.annotation.NonNull;
 
-import com.rubyhuntersky.gx.internal.devices.screen.Screen;
+import com.rubyhuntersky.gx.internal.screen.Screen;
 
 /**
  * @author wehjin

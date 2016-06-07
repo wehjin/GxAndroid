@@ -3,7 +3,7 @@ package com.rubyhuntersky.gx.internal.patches;
 import android.support.annotation.NonNull;
 
 import com.rubyhuntersky.gx.basics.Frame;
-import com.rubyhuntersky.gx.internal.devices.screen.Screen;
+import com.rubyhuntersky.gx.internal.screen.Screen;
 import com.rubyhuntersky.gx.internal.shapes.Shape;
 
 /**

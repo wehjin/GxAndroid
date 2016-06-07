@@ -22,7 +22,7 @@ import com.rubyhuntersky.gx.basics.Sizelet.FINGER
 import com.rubyhuntersky.gx.basics.Sizelet.READABLE
 import com.rubyhuntersky.gx.basics.TextStylet.*
 import com.rubyhuntersky.gx.devices.poles.Pole
-import com.rubyhuntersky.gx.internal.devices.screen.Screen
+import com.rubyhuntersky.gx.internal.screen.Screen
 import com.rubyhuntersky.gx.internal.patches.Patch
 import com.rubyhuntersky.gx.internal.shapes.RectangleShape
 import com.rubyhuntersky.gx.internal.shapes.Shape

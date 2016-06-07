@@ -3,8 +3,8 @@ package com.rubyhuntersky.gx.devices.poles;
 import android.support.annotation.NonNull;
 
 import com.rubyhuntersky.gx.internal.devices.FixedDimensionDevice;
-import com.rubyhuntersky.gx.internal.devices.screen.Screen;
-import com.rubyhuntersky.gx.internal.devices.screen.ScreenChain;
+import com.rubyhuntersky.gx.internal.screen.Screen;
+import com.rubyhuntersky.gx.internal.screen.ScreenChain;
 
 /**
  * @author wehjin
