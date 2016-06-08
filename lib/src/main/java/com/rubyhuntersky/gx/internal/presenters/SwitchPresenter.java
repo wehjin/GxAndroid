@@ -1,5 +1,6 @@
 package com.rubyhuntersky.gx.internal.presenters;
 
+import android.support.annotation.NonNull;
 import android.util.Log;
 
 import com.rubyhuntersky.gx.Human;
@@ -57,7 +58,7 @@ public class SwitchPresenter<T> implements Presenter<T> {
     }
 
     @Override
-    public void onReaction(Reaction reaction) {
+    public void onReaction(@NonNull Reaction reaction) {
         observer.onReaction(reaction);
     }
 
@@ -67,7 +68,7 @@ public class SwitchPresenter<T> implements Presenter<T> {
     }
 
     @Override
-    public void onError(Throwable throwable) {
+    public void onError(@NonNull Throwable throwable) {
         observer.onError(throwable);
     }
 

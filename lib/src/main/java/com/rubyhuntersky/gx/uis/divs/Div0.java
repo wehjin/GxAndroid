@@ -20,6 +20,7 @@ import com.rubyhuntersky.gx.observers.Observer;
 import com.rubyhuntersky.gx.presentations.Presentation;
 import com.rubyhuntersky.gx.presentations.ResizePresentation;
 import com.rubyhuntersky.gx.reactions.Reaction;
+import com.rubyhuntersky.gx.reactions.TapReaction;
 import com.rubyhuntersky.gx.uis.OnPresent;
 import com.rubyhuntersky.gx.uis.core.Ui0;
 import com.rubyhuntersky.gx.uis.divs.operations.ExpandDownDivOperation1;
@@ -76,11 +77,11 @@ public abstract class Div0 implements Ui0<Pole> {
 
     public abstract Presentation present(Human human, Pole pole, Observer observer);
 
-    public Div0 enableClick() {
+    public Div0 enableTap() {
         final Div0 upstream = this;
         return create(new OnPresent<Pole>() {
             @Override
-            public void onPresent(Presenter<Pole> presenter) {
+            public void onPresent(final Presenter<Pole> presenter) {
                 final Human human = presenter.getHuman();
                 final Pole pole = presenter.getDevice();
                 Presentation presentation = upstream.present(human, pole, presenter);
@@ -130,7 +131,10 @@ public abstract class Div0 implements Ui0<Pole> {
 
                             @Override
                             public void doUp(@NotNull Spot spot) {
-                                Log.d(TAG, "doUp " + System.currentTimeMillis());
+                                long time = System.currentTimeMillis();
+                                Log.d(TAG, "doUp " + time);
+                                TapReaction tapReaction = new TapReaction("enableTap", time);
+                                presenter.onReaction(tapReaction);
                             }
                         };
                     }
@@ -250,7 +254,7 @@ public abstract class Div0 implements Ui0<Pole> {
                                                                     presenter.getDevice(),
                                                                     new Observer() {
                                                                         @Override
-                                                                        public void onReaction(Reaction reaction) {
+                                                                        public void onReaction(@NonNull Reaction reaction) {
                                                                             // Do nothing.
                                                                         }
 
@@ -260,7 +264,7 @@ public abstract class Div0 implements Ui0<Pole> {
                                                                         }
 
                                                                         @Override
-                                                                        public void onError(Throwable throwable) {
+                                                                        public void onError(@NonNull Throwable throwable) {
                                                                             presenter.onError(throwable);
                                                                         }
                                                                     });

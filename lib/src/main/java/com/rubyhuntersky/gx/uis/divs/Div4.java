@@ -1,5 +1,7 @@
 package com.rubyhuntersky.gx.uis.divs;
 
+import android.support.annotation.NonNull;
+
 import com.rubyhuntersky.gx.observers.Observer;
 import com.rubyhuntersky.gx.reactions.Reaction;
 import com.rubyhuntersky.gx.basics.Sizelet;
@@ -60,7 +62,7 @@ public abstract class Div4<C1, C2, C3, C4> {
                 final Div0 ui = repl.print(Div4.this);
                 final Observer observer = new Observer() {
                     @Override
-                    public void onReaction(Reaction reaction) {
+                    public void onReaction(@NonNull Reaction reaction) {
                         if (presenter.isCancelled())
                             return;
 
@@ -76,7 +78,7 @@ public abstract class Div4<C1, C2, C3, C4> {
                     }
 
                     @Override
-                    public void onError(Throwable throwable) {
+                    public void onError(@NonNull Throwable throwable) {
                         presenter.onError(throwable);
                     }
                 };

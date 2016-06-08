@@ -1,5 +1,7 @@
 package com.rubyhuntersky.gx.observers;
 
+import android.support.annotation.NonNull;
+
 import com.rubyhuntersky.gx.reactions.Reaction;
 
 /**
@@ -10,7 +12,7 @@ import com.rubyhuntersky.gx.reactions.Reaction;
 public interface Observer {
     Observer EMPTY = new EmptyObserver();
 
-    void onReaction(Reaction reaction);
+    void onReaction(@NonNull Reaction reaction);
     void onEnd();
-    void onError(Throwable throwable);
+    void onError(@NonNull Throwable throwable);
 }

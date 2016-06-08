@@ -1,5 +1,7 @@
 package com.rubyhuntersky.gx.uis.tiles.operations;
 
+import android.support.annotation.NonNull;
+
 import com.rubyhuntersky.gx.observers.Observer;
 import com.rubyhuntersky.gx.reactions.Reaction;
 import com.rubyhuntersky.gx.presentations.Presentation;
@@ -30,7 +32,7 @@ public class NameTileOperation0 extends TileOperation0 {
                                                                presenter.getDevice(),
                                                                new Observer() {
                                                                    @Override
-                                                                   public void onReaction(Reaction reaction) {
+                                                                   public void onReaction(@NonNull Reaction reaction) {
                                                                        reaction.setSource(name);
                                                                        presenter.onReaction(reaction);
                                                                    }
@@ -41,7 +43,7 @@ public class NameTileOperation0 extends TileOperation0 {
                                                                    }
 
                                                                    @Override
-                                                                   public void onError(Throwable throwable) {
+                                                                   public void onError(@NonNull Throwable throwable) {
                                                                        presenter.onError(throwable);
                                                                    }
                                                                });

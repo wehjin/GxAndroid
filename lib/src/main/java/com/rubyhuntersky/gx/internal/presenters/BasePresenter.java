@@ -1,5 +1,7 @@
 package com.rubyhuntersky.gx.internal.presenters;
 
+import android.support.annotation.NonNull;
+
 import com.rubyhuntersky.gx.Human;
 import com.rubyhuntersky.gx.observers.Observer;
 import com.rubyhuntersky.gx.presentations.Presentation;
@@ -68,7 +70,7 @@ public abstract class BasePresenter<T> implements Presenter<T> {
     }
 
     @Override
-    public void onReaction(Reaction reaction) {
+    public void onReaction(@NonNull Reaction reaction) {
         if (isCancelled)
             return;
         observer.onReaction(reaction);
@@ -83,7 +85,7 @@ public abstract class BasePresenter<T> implements Presenter<T> {
     }
 
     @Override
-    public void onError(Throwable throwable) {
+    public void onError(@NonNull Throwable throwable) {
         if (isCancelled)
             return;
         cancel();
