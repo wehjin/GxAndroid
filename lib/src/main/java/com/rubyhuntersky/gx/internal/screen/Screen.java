@@ -10,6 +10,9 @@ import com.rubyhuntersky.gx.basics.TextStyle;
 import com.rubyhuntersky.gx.internal.patches.Patch;
 import com.rubyhuntersky.gx.internal.shapes.Shape;
 import com.rubyhuntersky.gx.internal.surface.Jester;
+import com.rubyhuntersky.gx.observers.Observer;
+import com.rubyhuntersky.gx.presentations.Presentation;
+import com.rubyhuntersky.gx.uis.divs.Div0;
 
 /**
  * @author wehjin
@@ -28,4 +31,7 @@ public interface Screen {
 
     @NonNull
     Removable addSurface(@NonNull Frame frame, @NonNull Jester jester);
+
+    @NonNull
+    Presentation present(@NonNull Div0 div, @NonNull Observer observer);
 }

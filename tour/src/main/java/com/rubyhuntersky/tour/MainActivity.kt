@@ -35,6 +35,7 @@ import com.rubyhuntersky.gx.internal.surface.Jester
 import com.rubyhuntersky.gx.internal.surface.MoveReaction
 import com.rubyhuntersky.gx.internal.surface.UpReaction
 import com.rubyhuntersky.gx.observers.Observer
+import com.rubyhuntersky.gx.presentations.Presentation
 import com.rubyhuntersky.gx.reactions.Reaction
 import com.rubyhuntersky.gx.uis.divs.Div0
 import java.util.*
@@ -117,140 +118,24 @@ open class MainActivity : AppCompatActivity() {
         val context = frameLayout.context
         val textRuler = TextRuler(context)
         val shapeRuler = ShapeRuler(context)
-        val elevationPixels = context.resources.getDimensionPixelSize(com.rubyhuntersky.gx.R.dimen.elevationGap)
-        val jesterItems = HashSet<JesterItem>()
-        var contacts = HashSet<Jester.Contact>();
-
-        private fun HashSet<Jester.Contact>.cancelAndClear() {
-            for (contact in this) {
-                contact.doCancel()
-            }
-            clear()
-        }
+        val patchController = PatchController(frameLayout)
+        val surfaceController = TouchController()
 
         init {
-            frameLayout.setOnTouchListener { view, motionEvent ->
-                val spot = Spot(getX(motionEvent, 0), getY(motionEvent, 0), 0f)
-                when (motionEvent.action) {
-                    MotionEvent.ACTION_DOWN -> {
-                        Log.v(tag, "Action Down")
-                        contacts.cancelAndClear()
-                        for ((frame, jester) in jesterItems) {
-                            Log.v(tag, "Spot $spot, Frame $frame")
-                            if (spot.intersects(frame)) {
-                                val contact = jester.getContact(spot)
-                                Log.v(tag, "Contact $contact")
-                                if (contact != null) {
-                                    contacts.add(contact)
-                                }
-                            }
-                        }
-                    }
-                    MotionEvent.ACTION_CANCEL -> {
-                        Log.v(tag, "Action Cancel")
-                        contacts.cancelAndClear()
-                    }
-                    MotionEvent.ACTION_MOVE -> {
-                        Log.v(tag, "Action Move")
-                        val moveContacts = HashSet<Jester.Contact>()
-                        val cancelContacts = HashSet<Jester.Contact>()
-                        for (contact in contacts) {
-                            val moveReaction = contact.getMoveReaction(spot)
-                            if (moveReaction == MoveReaction.CONTINUE) {
-                                moveContacts.add(contact)
-                            } else {
-                                contacts.remove(contact)
-                                cancelContacts.add(contact)
-                            }
-                        }
-                        cancelContacts.cancelAndClear()
-                        for (contact in moveContacts) {
-                            contact.doMove(spot)
-                        }
-                    }
-                    MotionEvent.ACTION_UP -> {
-                        Log.v(tag, "Action Up")
-                        val upContacts = HashSet<Jester.Contact>()
-                        val cancelContacts = HashSet<Jester.Contact>()
-                        for (contact in contacts) {
-                            if (contact.getUpReaction(spot) == UpReaction.CONFIRM) {
-                                upContacts.add(contact)
-                            } else {
-                                cancelContacts.add(contact)
-                            }
-                        }
-                        contacts.clear()
-                        cancelContacts.cancelAndClear()
-                        for (contact in upContacts) {
-                            contact.doUp(spot)
-                        }
-                    }
-                }
-                true
-            }
+            frameLayout.setOnTouchListener(surfaceController.newTouchListener)
+        }
+
+        override fun present(div: Div0, observer: Observer): Presentation {
+            throw UnsupportedOperationException()
         }
 
         override fun addSurface(frame: Frame, jester: Jester): Removable {
-            Log.d(tag, "addSurface $frame, $jester")
-            val jesterItem = JesterItem(frame, jester)
-            jesterItems.add(jesterItem)
-            return object : Removable {
-                override fun remove() {
-                    Log.d(tag, "removeSurface $jesterItem")
-                    jesterItems.remove(jesterItem)
-                }
-            }
+            return surfaceController.addSurface(frame, jester)
         }
 
         override fun addPatch(frame: Frame, shape: Shape, argbColor: Int): Patch {
+            return patchController.addPatch(frame, shape, argbColor)
 
-            Log.d(tag, "addPatch $frame $shape $argbColor")
-            when (shape) {
-                is RectangleShape -> {
-                    Log.d(tag, "RectangleShape")
-                    val view = View(frameLayout.context)
-                    view.setBackgroundColor(argbColor)
-                    return addPatch(view, frame, 0f)
-                }
-                is TextShape -> {
-                    Log.d(tag, "TextShape")
-                    val textView = TextView(context)
-                    textView.gravity = Gravity.TOP
-                    textView.setTextColor(shape.textStyle.typecolor)
-                    textView.typeface = shape.textStyle.typeface
-                    textView.textSize = shape.textStyle.typeheight.toFloat()
-                    textView.text = shape.textString
-                    textView.includeFontPadding = false
-                    val textHeight = shape.textSize.textHeight
-                    val newFrame = frame.withVerticalShift(-textHeight.topPadding).withVerticalLength(textHeight.topPadding + textHeight.height)
-                    return addPatch(textView, newFrame, textHeight.height / 2)
-                }
-                is ViewShape -> {
-                    val view = shape.createView(context)
-                    return addPatch(view, frame, 0f)
-                }
-                else -> {
-                    Log.d(tag, "OtherShape")
-                    return Patch.EMPTY
-                }
-            }
-        }
-
-        private fun addPatch(view: View, frame: Frame, additionalHeight: Float): Patch {
-            setElevation(view, (elevationPixels * frame.elevation).toFloat())
-            frameLayout.addView(view, frame.toLayoutParams(additionalHeight))
-            return Patch {
-                frameLayout.removeView(view)
-            }
-        }
-
-        private fun Frame.toLayoutParams(additionalHeight: Float): FrameLayout.LayoutParams {
-            val patchWidth = horizontal.toLength().toInt()
-            val patchHeight = (vertical.toLength() + additionalHeight).toInt()
-            val layoutParams = FrameLayout.LayoutParams(patchWidth, patchHeight)
-            layoutParams.leftMargin = horizontal.start.toInt()
-            layoutParams.topMargin = vertical.start.toInt()
-            return layoutParams
         }
 
         override fun measureText(text: String, textStyle: TextStyle): TextSize {
@@ -261,9 +146,166 @@ open class MainActivity : AppCompatActivity() {
         override fun measureShape(shape: Shape): ShapeSize {
             Log.d(tag, "measureShape $shape")
             return shapeRuler.measure(shape)
-
         }
 
-        data class JesterItem(val frame: Frame, val jester: Jester);
+        class PatchController(val frameLayout: FrameLayout) {
+
+            val context = frameLayout.context
+            val resources = context.resources
+            val elevationPixels = resources.getDimensionPixelSize(com.rubyhuntersky.gx.R.dimen.elevationGap)
+
+            fun addPatch(frame: Frame, shape: Shape, argbColor: Int): Patch {
+                Log.d(tag, "addPatch $frame $shape $argbColor")
+                when (shape) {
+                    is RectangleShape -> {
+                        Log.d(tag, "RectangleShape")
+                        val view = View(context)
+                        view.setBackgroundColor(argbColor)
+                        return addPatch(view, frame, 0f)
+                    }
+                    is TextShape -> {
+                        Log.d(tag, "TextShape")
+                        val textView = TextView(context)
+                        textView.gravity = Gravity.TOP
+                        textView.setTextColor(shape.textStyle.typecolor)
+                        textView.typeface = shape.textStyle.typeface
+                        textView.textSize = shape.textStyle.typeheight.toFloat()
+                        textView.text = shape.textString
+                        textView.includeFontPadding = false
+                        val textHeight = shape.textSize.textHeight
+                        val newFrame = frame.withVerticalShift(-textHeight.topPadding).withVerticalLength(textHeight.topPadding + textHeight.height)
+                        return addPatch(textView, newFrame, textHeight.height / 2)
+                    }
+                    is ViewShape -> {
+                        val view = shape.createView(context)
+                        return addPatch(view, frame, 0f)
+                    }
+                    else -> {
+                        Log.d(tag, "OtherShape")
+                        return Patch.EMPTY
+                    }
+                }
+            }
+
+            private fun addPatch(view: View, frame: Frame, additionalHeight: Float): Patch {
+                setElevation(view, (elevationPixels * frame.elevation).toFloat())
+                frameLayout.addView(view, frame.toLayoutParams(additionalHeight))
+                return Patch {
+                    frameLayout.removeView(view)
+                }
+            }
+
+            private fun Frame.toLayoutParams(additionalHeight: Float): FrameLayout.LayoutParams {
+                val patchWidth = horizontal.toLength().toInt()
+                val patchHeight = (vertical.toLength() + additionalHeight).toInt()
+                val layoutParams = FrameLayout.LayoutParams(patchWidth, patchHeight)
+                layoutParams.leftMargin = horizontal.start.toInt()
+                layoutParams.topMargin = vertical.start.toInt()
+                return layoutParams
+            }
+        }
+
+        class TouchController {
+
+            private data class JesterItem(val frame: Frame, val jester: Jester)
+
+            private val jesterItems = HashSet<JesterItem>()
+            private val contacts = HashSet<Jester.Contact>()
+
+            val newTouchListener: (View, MotionEvent) -> Boolean get() = { view, motionEvent ->
+                val spot = Spot(getX(motionEvent, 0), getY(motionEvent, 0), 0f)
+                when (motionEvent.action) {
+                    MotionEvent.ACTION_DOWN -> {
+                        onTouchDown(spot)
+                    }
+                    MotionEvent.ACTION_CANCEL -> {
+                        onTouchCancel()
+                    }
+                    MotionEvent.ACTION_MOVE -> {
+                        onTouchMove(spot)
+                    }
+                    MotionEvent.ACTION_UP -> {
+                        onTouchUp(spot)
+                    }
+                }
+                true
+            }
+
+            fun addSurface(frame: Frame, jester: Jester): Removable {
+                Log.d(tag, "addSurface $frame, $jester")
+                val jesterItem = JesterItem(frame, jester)
+                jesterItems.add(jesterItem)
+                return object : Removable {
+                    override fun remove() {
+                        Log.d(tag, "removeSurface $jesterItem")
+                        jesterItems.remove(jesterItem)
+                    }
+                }
+            }
+
+            private fun onTouchDown(spot: Spot) {
+                Log.v(tag, "Action Down")
+                contacts.cancelAndClear()
+                for ((frame, jester) in jesterItems) {
+                    Log.v(tag, "Spot $spot, Frame $frame")
+                    if (spot.intersects(frame)) {
+                        val contact = jester.getContact(spot)
+                        Log.v(tag, "Contact $contact")
+                        if (contact != null) {
+                            contacts.add(contact)
+                        }
+                    }
+                }
+            }
+
+            private fun onTouchCancel() {
+                Log.v(tag, "Action Cancel")
+                contacts.cancelAndClear()
+            }
+
+            private fun onTouchMove(spot: Spot) {
+                Log.v(tag, "Action Move")
+                val moveContacts = HashSet<Jester.Contact>()
+                val cancelContacts = HashSet<Jester.Contact>()
+                for (contact in contacts) {
+                    val moveReaction = contact.getMoveReaction(spot)
+                    if (moveReaction == MoveReaction.CONTINUE) {
+                        moveContacts.add(contact)
+                    } else {
+                        contacts.remove(contact)
+                        cancelContacts.add(contact)
+                    }
+                }
+                cancelContacts.cancelAndClear()
+                for (contact in moveContacts) {
+                    contact.doMove(spot)
+                }
+            }
+
+            private fun onTouchUp(spot: Spot) {
+                Log.v(tag, "Action Up")
+                val upContacts = HashSet<Jester.Contact>()
+                val cancelContacts = HashSet<Jester.Contact>()
+                for (contact in contacts) {
+                    if (contact.getUpReaction(spot) == UpReaction.CONFIRM) {
+                        upContacts.add(contact)
+                    } else {
+                        cancelContacts.add(contact)
+                    }
+                }
+                contacts.clear()
+                cancelContacts.cancelAndClear()
+                for (contact in upContacts) {
+                    contact.doUp(spot)
+                }
+            }
+
+            private fun HashSet<Jester.Contact>.cancelAndClear() {
+                for (contact in this) {
+                    contact.doCancel()
+                }
+                clear()
+            }
+        }
     }
 }

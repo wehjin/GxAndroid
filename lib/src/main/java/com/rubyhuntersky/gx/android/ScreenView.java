@@ -25,6 +25,9 @@ import com.rubyhuntersky.gx.internal.shapes.Shape;
 import com.rubyhuntersky.gx.internal.shapes.TextShape;
 import com.rubyhuntersky.gx.internal.shapes.ViewShape;
 import com.rubyhuntersky.gx.internal.surface.Jester;
+import com.rubyhuntersky.gx.observers.Observer;
+import com.rubyhuntersky.gx.presentations.Presentation;
+import com.rubyhuntersky.gx.uis.divs.Div0;
 
 import kotlin.NotImplementedError;
 
@@ -93,6 +96,12 @@ public class ScreenView extends FrameLayout implements Screen {
     @Override
     public Removable addSurface(@NonNull Frame frame, @NonNull Jester jester) {
         throw new NotImplementedError("addSurface");
+    }
+
+    @NonNull
+    @Override
+    public Presentation present(@NonNull Div0 div, @NonNull Observer observer) {
+        throw new UnsupportedOperationException("present/div0");
     }
 
     @NonNull
