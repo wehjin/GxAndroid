@@ -32,7 +32,7 @@ open class MainActivity : AppCompatActivity() {
     val human by lazy { AndroidHuman(this) }
     val moreIndicator: Div0 by lazy {
         val moreMarker = textTile("▼", IMPORTANT_DARK)
-        val moreMarkerInset = .1f
+        val moreMarkerInset = .01f
         val leftMarker = moreMarker.toColumn(moreMarkerInset)
         val rightMarker = moreMarker.toColumn(1f - moreMarkerInset)
         val moreIndicator = leftMarker.placeBefore(rightMarker, 0)
@@ -56,13 +56,13 @@ open class MainActivity : AppCompatActivity() {
     fun onWidth(frameLayout: FrameLayout, left: Int, right: Int) {
         Log.d(tag, "onWidth left $left right $right")
         val pole = Pole((right - left).toFloat(), 0f, 0, FrameLayoutScreen(frameLayout, human))
-        val menuLauncher = textColumn("Account 1234", TITLE_DARK)
+        val menuLauncher = textColumn("Account 1234", IMPORTANT_DARK)
                 .padBottom(READABLE)
                 .expandDown(textColumn("Buy 20 shares", READABLE_DARK))
                 .padBottom(READABLE)
                 .expandDown(textColumn("and", READABLE_DARK))
                 .padBottom(Sizelet.readables(3f))
-                .expandDown(textColumn("Add funds $3398.29", TITLE_DARK))
+                .expandDown(textColumn("Add funds $3398.29", IMPORTANT_DARK))
                 .placeBefore(moreIndicator, 1, .5f)
                 .padVertical(READABLE)
                 .enableTap()
