@@ -5,5 +5,5 @@ package com.rubyhuntersky.gx.reactions
  * @since 6/8/16.
  */
 
-data class TapReaction(override var source: String, val time: Long) : Reaction
+data class TapReaction<T>(val tag: T, override var source: String, val time: Long) : Reaction
 

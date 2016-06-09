@@ -77,7 +77,7 @@ public abstract class Div0 implements Ui0<Pole> {
 
     public abstract Presentation present(Human human, Pole pole, Observer observer);
 
-    public Div0 enableTap() {
+    public <T> Div0 enableTap(final T label) {
         final Div0 upstream = this;
         return create(new OnPresent<Pole>() {
             @Override
@@ -133,8 +133,7 @@ public abstract class Div0 implements Ui0<Pole> {
                             public void doUp(@NotNull Spot spot) {
                                 long time = System.currentTimeMillis();
                                 Log.d(TAG, "doUp " + time);
-                                TapReaction tapReaction = new TapReaction("enableTap", time);
-                                presenter.onReaction(tapReaction);
+                                presenter.onReaction(new TapReaction<>(label, "enableTap", time));
                             }
                         };
                     }

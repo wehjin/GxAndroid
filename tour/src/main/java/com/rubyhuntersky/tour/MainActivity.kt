@@ -55,7 +55,7 @@ open class MainActivity : AppCompatActivity() {
         }, MATCH_PARENT, MATCH_PARENT)
     }
 
-    fun dropDownMenu(startIndex: Int, items: List<Div0>): Div0 {
+    fun dropDownMenuDiv(startIndex: Int, items: List<Div0>): Div0 {
         return Div0.create({ presenter ->
 
             presenter.addPresentation(object : BooleanPresentation() {
@@ -83,12 +83,12 @@ open class MainActivity : AppCompatActivity() {
                 }
 
                 fun presentLauncher(index: Int) {
-                    val item = items[index]
-                    val launcher = item.placeBefore(moreIndicator, 1, .5f).enableTap()
+                    val item = items[index].padVertical(Sizelet.QUARTER_FINGER)
+                    val launcher = item.placeBefore(moreIndicator, 1, .5f).enableTap("launcher")
                     launcherPresentation?.cancel()
                     launcherPresentation = launcher.present(human, pole, object : Observer {
                         override fun onReaction(reaction: Reaction) {
-                            if (reaction is TapReaction) {
+                            if (reaction is TapReaction<*>) {
                                 presentMenu(index)
                             }
                         }
@@ -103,27 +103,29 @@ open class MainActivity : AppCompatActivity() {
                     })
                 }
 
-                fun presentMenu(index: Int) {
+                fun presentMenu(launchIndex: Int) {
                     var menu: Div0? = null
+                    var index = 0
                     for (item: Div0 in items) {
-                        val paddedItem = item.padVertical(Sizelet.THIRD_FINGER)
+                        val paddedItem = item.padVertical(Sizelet.THIRD_FINGER).enableTap(index)
+                                .enableTap(index)
                         menu = menu
                                 ?.expandDown(colorColumn(Sizelet.readables(.2f), MAGENTA))
                                 ?.expandDown(paddedItem)
                                 ?: paddedItem
+                        index++
                     }
                     menu = menu
                             ?.padVertical(Sizelet.READABLE)
                             ?.placeBefore(colorColumn(Sizelet.PREVIOUS, CYAN), 1)
-                            ?.enableTap()
                             ?: return
 
                     menuPresentation?.cancel()
                     menuPresentation = pole.present(menu, object : Observer {
                         override fun onReaction(reaction: Reaction) {
-                            if (reaction is TapReaction) {
+                            if (reaction is TapReaction<*>) {
                                 menuPresentation?.cancel()
-                                presentLauncher(1)
+                                presentLauncher(reaction.tag as Int)
                             }
                         }
 
@@ -157,7 +159,7 @@ open class MainActivity : AppCompatActivity() {
                 .padVertical(READABLE)
 
         val menuItems = listOf(menuItem1, menuItem2)
-        val dropDownMenu = dropDownMenu(0, menuItems)
+        val dropDownMenu = dropDownMenuDiv(0, menuItems)
 
         val div = colorColumn(FINGER, GREEN)
                 .expandDown(colorColumn(FINGER, BLUE))
