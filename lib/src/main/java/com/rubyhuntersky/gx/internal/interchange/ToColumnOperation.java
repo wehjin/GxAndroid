@@ -28,13 +28,16 @@ public class ToColumnOperation {
             @Override
             public void onPresent(Presenter<Pole> presenter) {
                 Pole pole = presenter.getDevice();
-                final Mosaic mosaic = new Mosaic(pole.fixedWidth, pole.relatedHeight, pole.elevation, pole);
+                final Mosaic mosaic = new Mosaic(pole.getFixedWidth(),
+                                                 pole.getRelatedHeight(),
+                                                 pole.getElevation(),
+                                                 pole);
                 final ShiftMosaic frameShiftTile = mosaic.withShift();
                 final Presentation presentation = tile0.present(presenter.getHuman(), frameShiftTile, presenter);
                 final float presentationWidth = presentation.getWidth();
-                final float extraWidth = pole.fixedWidth - presentationWidth;
+                final float extraWidth = pole.getFixedWidth() - presentationWidth;
                 frameShiftTile.doShift(extraWidth * anchor, 0);
-                presenter.addPresentation(new ResizePresentation(pole.fixedWidth,
+                presenter.addPresentation(new ResizePresentation(pole.getFixedWidth(),
                                                                  presentation.getHeight(),
                                                                  presentation));
             }

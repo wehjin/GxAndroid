@@ -13,9 +13,11 @@ import com.rubyhuntersky.gx.android.AndroidHuman
 import com.rubyhuntersky.gx.basics.Sizelet
 import com.rubyhuntersky.gx.basics.Sizelet.FINGER
 import com.rubyhuntersky.gx.basics.Sizelet.READABLE
-import com.rubyhuntersky.gx.basics.TextStylet.*
+import com.rubyhuntersky.gx.basics.TextStylet.IMPORTANT_DARK
+import com.rubyhuntersky.gx.basics.TextStylet.READABLE_DARK
 import com.rubyhuntersky.gx.devices.poles.Pole
 import com.rubyhuntersky.gx.observers.Observer
+import com.rubyhuntersky.gx.presentations.BooleanPresentation
 import com.rubyhuntersky.gx.presentations.Presentation
 import com.rubyhuntersky.gx.reactions.Reaction
 import com.rubyhuntersky.gx.reactions.TapReaction
@@ -53,46 +55,114 @@ open class MainActivity : AppCompatActivity() {
         }, MATCH_PARENT, MATCH_PARENT)
     }
 
+    fun dropDownMenu(startIndex: Int, items: List<Div0>): Div0 {
+        return Div0.create({ presenter ->
+
+            presenter.addPresentation(object : BooleanPresentation() {
+
+                val pole = presenter.device
+                val human = presenter.human
+                var launcherPresentation: Presentation? = null
+                var menuPresentation: Presentation? = null
+
+                init {
+                    presentLauncher(startIndex)
+                }
+
+                override fun getWidth(): Float {
+                    return pole.fixedWidth
+                }
+
+                override fun getHeight(): Float {
+                    return launcherPresentation?.height ?: 0f
+                }
+
+                override fun onCancel() {
+                    menuPresentation?.cancel()
+                    launcherPresentation?.cancel()
+                }
+
+                fun presentLauncher(index: Int) {
+                    val item = items[index]
+                    val launcher = item.placeBefore(moreIndicator, 1, .5f).enableTap()
+                    launcherPresentation?.cancel()
+                    launcherPresentation = launcher.present(human, pole, object : Observer {
+                        override fun onReaction(reaction: Reaction) {
+                            if (reaction is TapReaction) {
+                                presentMenu(index)
+                            }
+                        }
+
+                        override fun onEnd() {
+                            presenter.onEnd()
+                        }
+
+                        override fun onError(throwable: Throwable) {
+                            presenter.onError(throwable)
+                        }
+                    })
+                }
+
+                fun presentMenu(index: Int) {
+                    var menu: Div0? = null
+                    for (item: Div0 in items) {
+                        val paddedItem = item.padVertical(Sizelet.THIRD_FINGER)
+                        menu = menu
+                                ?.expandDown(colorColumn(Sizelet.readables(.2f), MAGENTA))
+                                ?.expandDown(paddedItem)
+                                ?: paddedItem
+                    }
+                    menu = menu
+                            ?.padVertical(Sizelet.READABLE)
+                            ?.placeBefore(colorColumn(Sizelet.PREVIOUS, CYAN), 1)
+                            ?.enableTap()
+                            ?: return
+
+                    menuPresentation?.cancel()
+                    menuPresentation = pole.present(menu, object : Observer {
+                        override fun onReaction(reaction: Reaction) {
+                            if (reaction is TapReaction) {
+                                menuPresentation?.cancel()
+                                presentLauncher(1)
+                            }
+                        }
+
+                        override fun onEnd() {
+                            presenter.onEnd()
+                        }
+
+                        override fun onError(throwable: Throwable) {
+                            presenter.onError(throwable)
+                        }
+                    })
+                }
+            })
+        })
+    }
+
     fun onWidth(frameLayout: FrameLayout, left: Int, right: Int) {
         Log.d(tag, "onWidth left $left right $right")
         val pole = Pole((right - left).toFloat(), 0f, 0, FrameLayoutScreen(frameLayout, human))
-        val menuLauncher = textColumn("Account 1234", IMPORTANT_DARK)
+        val menuItem1 = textColumn("Account 1234", IMPORTANT_DARK)
                 .padBottom(READABLE)
                 .expandDown(textColumn("Buy 20 shares", READABLE_DARK))
                 .padBottom(READABLE)
                 .expandDown(textColumn("and", READABLE_DARK))
                 .padBottom(Sizelet.readables(3f))
                 .expandDown(textColumn("Add funds $3398.29", IMPORTANT_DARK))
-                .placeBefore(moreIndicator, 1, .5f)
                 .padVertical(READABLE)
-                .enableTap()
+        val menuItem2 = textColumn("Account ABCD", IMPORTANT_DARK)
+                .padBottom(READABLE)
+                .expandDown(textColumn("Sufficient funds $8972.33", READABLE_DARK))
+                .padVertical(READABLE)
+
+        val menuItems = listOf(menuItem1, menuItem2)
+        val dropDownMenu = dropDownMenu(0, menuItems)
 
         val div = colorColumn(FINGER, GREEN)
                 .expandDown(colorColumn(FINGER, BLUE))
-                .expandDown(menuLauncher)
-
-        div.present(human, pole, object : LogObserver() {
-
-            var menuPresentation: Presentation? = null
-
-            override fun onReaction(reaction: Reaction) {
-                super.onReaction(reaction)
-                if (reaction is TapReaction) {
-                    val overDiv = colorColumn(FINGER, RED).enableTap()
-                    menuPresentation = pole.present(overDiv, object : LogObserver() {
-                        override fun onReaction(reaction: Reaction) {
-                            super.onReaction(reaction)
-                            when (reaction) {
-                                is TapReaction -> {
-                                    menuPresentation?.cancel()
-                                    menuPresentation = null
-                                }
-                            }
-                        }
-                    })
-                }
-            }
-        })
+                .expandDown(dropDownMenu)
+        div.present(human, pole, LogObserver())
     }
 
     override fun onResume() {

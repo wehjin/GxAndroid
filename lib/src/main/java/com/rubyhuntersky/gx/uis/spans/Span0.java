@@ -8,11 +8,11 @@ import com.rubyhuntersky.gx.devices.bars.Bar;
 import com.rubyhuntersky.gx.devices.bars.ShiftBar;
 import com.rubyhuntersky.gx.devices.poles.Pole;
 import com.rubyhuntersky.gx.internal.presenters.BasePresenter;
-import com.rubyhuntersky.gx.uis.OnPresent;
 import com.rubyhuntersky.gx.internal.presenters.Presenter;
 import com.rubyhuntersky.gx.observers.Observer;
 import com.rubyhuntersky.gx.presentations.Presentation;
 import com.rubyhuntersky.gx.presentations.ResizePresentation;
+import com.rubyhuntersky.gx.uis.OnPresent;
 import com.rubyhuntersky.gx.uis.core.Ui0;
 import com.rubyhuntersky.gx.uis.divs.Div0;
 import com.rubyhuntersky.gx.uis.tiles.Tile0;
@@ -41,15 +41,15 @@ abstract public class Span0 implements Ui0<Bar> {
     @NonNull
     private Presentation presentBarToColumn(Span0 span0, Sizelet heightlet, Human human, Pole pole,
           Observer observer) {
-        final float height = heightlet.toFloat(human, pole.relatedHeight);
-        final Bar bar = new Bar(height, pole.fixedWidth, pole.elevation, pole);
+        final float height = heightlet.toFloat(human, pole.getRelatedHeight());
+        final Bar bar = new Bar(height, pole.getFixedWidth(), pole.getElevation(), pole);
         final ShiftBar shiftBar = bar.withShift();
         final Presentation presentation = span0.present(human, shiftBar, observer);
         final float presentationWidth = presentation.getWidth();
-        final float extraWidth = pole.fixedWidth - presentationWidth;
+        final float extraWidth = pole.getFixedWidth() - presentationWidth;
         final float anchor = .5f;
         shiftBar.doShift(extraWidth * anchor, 0);
-        return new ResizePresentation(pole.fixedWidth, bar.fixedHeight, presentation);
+        return new ResizePresentation(pole.getFixedWidth(), bar.fixedHeight, presentation);
     }
 
     public Span0 expandStart(final Tile0 startUi) {

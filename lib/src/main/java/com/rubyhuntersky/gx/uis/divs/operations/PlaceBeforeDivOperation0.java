@@ -42,7 +42,7 @@ public class PlaceBeforeDivOperation0 extends DivOperation0 {
             public void onPresent(Presenter<Pole> presenter) {
                 Human human = presenter.getHuman();
                 Pole pole = presenter.getDevice();
-                final ShiftPole nearDelayPole = pole.withElevation(pole.elevation + gap).withShift();
+                final ShiftPole nearDelayPole = pole.withElevation(pole.getElevation() + gap).withShift();
                 final Presentation nearPresentation = base.present(human, nearDelayPole, presenter);
                 final float nearHeight = nearPresentation.getHeight();
 

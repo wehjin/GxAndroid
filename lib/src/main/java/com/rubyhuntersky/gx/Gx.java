@@ -17,13 +17,13 @@ import com.rubyhuntersky.gx.devices.bars.Bar;
 import com.rubyhuntersky.gx.devices.mosaics.Mosaic;
 import com.rubyhuntersky.gx.devices.poles.Pole;
 import com.rubyhuntersky.gx.internal.patches.Patch;
-import com.rubyhuntersky.gx.uis.OnPresent;
 import com.rubyhuntersky.gx.internal.presenters.Presenter;
 import com.rubyhuntersky.gx.internal.shapes.RectangleShape;
 import com.rubyhuntersky.gx.internal.shapes.ViewShape;
 import com.rubyhuntersky.gx.presentations.BooleanPresentation;
 import com.rubyhuntersky.gx.presentations.PatchPresentation;
 import com.rubyhuntersky.gx.presentations.Presentation;
+import com.rubyhuntersky.gx.uis.OnPresent;
 import com.rubyhuntersky.gx.uis.divs.Div0;
 import com.rubyhuntersky.gx.uis.spans.Span0;
 import com.rubyhuntersky.gx.uis.tiles.Tile0;
@@ -97,8 +97,8 @@ public class Gx {
             @Override
             public void onPresent(Presenter<Pole> presenter) {
                 final Pole pole = presenter.getDevice();
-                final float height = heightlet.toFloat(presenter.getHuman(), pole.relatedHeight);
-                final Frame frame = new Frame(pole.fixedWidth, height, pole.elevation);
+                final float height = heightlet.toFloat(presenter.getHuman(), pole.getRelatedHeight());
+                final Frame frame = new Frame(pole.getFixedWidth(), height, pole.getElevation());
                 final Patch patch = coloret == null
                       ? null
                       : pole.addPatch(frame, new RectangleShape(), coloret.toArgb());
@@ -106,7 +106,7 @@ public class Gx {
 
                     @Override
                     public float getWidth() {
-                        return pole.fixedWidth;
+                        return pole.getFixedWidth();
                     }
 
                     @Override

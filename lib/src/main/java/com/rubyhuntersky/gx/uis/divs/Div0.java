@@ -57,7 +57,7 @@ public abstract class Div0 implements Ui0<Pole> {
                 final BasePresenter<Pole> presenter = new BasePresenter<Pole>(human, pole, observer) {
                     @Override
                     public float getWidth() {
-                        return device.fixedWidth;
+                        return device.getFixedWidth();
                     }
 
                     @Override
@@ -87,7 +87,7 @@ public abstract class Div0 implements Ui0<Pole> {
                 Presentation presentation = upstream.present(human, pole, presenter);
                 presenter.addPresentation(presentation);
 
-                final Frame frame = new Frame(presentation.getWidth(), presentation.getHeight(), pole.elevation);
+                final Frame frame = new Frame(presentation.getWidth(), presentation.getHeight(), pole.getElevation());
                 final Removable removable = pole.addSurface(frame, new Jester() {
                     @Nullable
                     @Override
@@ -187,7 +187,7 @@ public abstract class Div0 implements Ui0<Pole> {
                 final float padding = padlet.toFloat(human, height);
                 newColumn.doShift(0, padding);
                 final float newHeight = height + padding;
-                presenter.addPresentation(new ResizePresentation(pole.fixedWidth, newHeight, presentation));
+                presenter.addPresentation(new ResizePresentation(pole.getFixedWidth(), newHeight, presentation));
             }
         });
     }
@@ -209,7 +209,7 @@ public abstract class Div0 implements Ui0<Pole> {
                 final float padding = padlet.toFloat(human, height);
                 newColumn.doShift(0, padding);
                 final float newHeight = height + 2 * padding;
-                presenter.addPresentation(new ResizePresentation(pole.fixedWidth, newHeight, presentation));
+                presenter.addPresentation(new ResizePresentation(pole.getFixedWidth(), newHeight, presentation));
             }
         });
     }
