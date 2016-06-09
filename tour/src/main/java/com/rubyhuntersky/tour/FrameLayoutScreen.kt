@@ -238,10 +238,10 @@ class FrameLayoutScreen(val frameLayout: FrameLayout, val human: Human) : Screen
                 if (moveReaction == MoveReaction.CONTINUE) {
                     moveContacts.add(contact)
                 } else {
-                    contacts.remove(contact)
                     cancelContacts.add(contact)
                 }
             }
+            contacts.removeAll(cancelContacts)
             cancelContacts.cancelAndClear()
             for (contact in moveContacts) {
                 contact.doMove(spot)

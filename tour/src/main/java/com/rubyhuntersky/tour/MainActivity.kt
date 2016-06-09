@@ -7,8 +7,7 @@ import android.widget.FrameLayout
 import android.widget.FrameLayout.LayoutParams.MATCH_PARENT
 import butterknife.BindView
 import butterknife.ButterKnife
-import com.rubyhuntersky.coloret.Coloret.BLUE
-import com.rubyhuntersky.coloret.Coloret.GREEN
+import com.rubyhuntersky.coloret.Coloret.*
 import com.rubyhuntersky.gx.Gx.colorColumn
 import com.rubyhuntersky.gx.Gx.dropDownMenuDiv
 import com.rubyhuntersky.gx.Gx.textColumn
@@ -68,6 +67,8 @@ open class MainActivity : AppCompatActivity() {
         val div = colorColumn(FINGER, GREEN)
                 .expandDown(colorColumn(FINGER, BLUE))
                 .expandDown(dropDownMenu)
+                .expandDown(colorColumn(FINGER, RED))
+
         div.present(human, pole, LogObserver())
     }
 
