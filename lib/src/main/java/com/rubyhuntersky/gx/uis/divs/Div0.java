@@ -192,7 +192,7 @@ public abstract class Div0 implements Ui0<Pole> {
     }
 
     public Div0 padBottom(final Sizelet padlet) {
-        return expandDown(Gx.gapColumn(padlet));
+        return expandDown(Gx.INSTANCE.gapColumn(padlet));
     }
 
     public Div0 padVertical(final Sizelet padlet) {

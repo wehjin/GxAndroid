@@ -78,7 +78,7 @@ public class Div02UnitTest {
                 return ShapeSize.ZERO;
             }
         };
-        div0 = Gx.colorColumn(Sizelet.FINGER, Coloret.BLUE);
+        div0 = Gx.INSTANCE.colorColumn(Sizelet.FINGER, Coloret.BLUE);
         integerDiv1 = Div1.create(new Div1.OnBind<Integer>() {
             @NonNull
             @Override

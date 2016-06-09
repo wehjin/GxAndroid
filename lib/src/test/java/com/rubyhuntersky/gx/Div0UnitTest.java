@@ -24,8 +24,6 @@ import org.junit.Test;
 
 import java.util.ArrayList;
 
-import static com.rubyhuntersky.gx.Gx.colorColumn;
-import static com.rubyhuntersky.gx.Gx.gapColumn;
 import static com.rubyhuntersky.gx.basics.Sizelet.pixels;
 import static org.junit.Assert.assertEquals;
 
@@ -64,7 +62,7 @@ public class Div0UnitTest {
                 return ShapeSize.ZERO;
             }
         };
-        padTopUi = colorColumn(pixels(10), Coloret.BLACK).padTop(pixels(15));
+        padTopUi = Gx.INSTANCE.colorColumn(pixels(10), Coloret.BLACK).padTop(pixels(15));
         presentation = Presentation.EMPTY;
     }
 
@@ -75,14 +73,14 @@ public class Div0UnitTest {
 
     @Test
     public void expandVertical_increasesHeight() throws Exception {
-        final Div0 verticalExpansion = colorColumn(pixels(17), Coloret.BLACK).expandVertical(pixels(5));
+        final Div0 verticalExpansion = Gx.INSTANCE.colorColumn(pixels(17), Coloret.BLACK).expandVertical(pixels(5));
         presentation = verticalExpansion.present(human, pole, Observer.EMPTY);
         assertEquals(27, presentation.getHeight(), .0001);
     }
 
     @Test
     public void expandVertical_movesFrameDown() throws Exception {
-        final Div0 verticalExpansion = colorColumn(pixels(17), Coloret.BLACK).expandVertical(pixels(5));
+        final Div0 verticalExpansion = Gx.INSTANCE.colorColumn(pixels(17), Coloret.BLACK).expandVertical(pixels(5));
         presentation = verticalExpansion.present(human, pole, Observer.EMPTY);
         Range vertical = frames.get(0).getVertical();
         assertEquals(5, vertical.getStart(), .0001);
@@ -106,8 +104,8 @@ public class Div0UnitTest {
 
     @Test
     public void expandBottomWithColumn_expandsPresentationHeight() throws Exception {
-        final Div0 expandBottomWithColumn = colorColumn(pixels(10), Coloret.BLACK)
-              .expandDown(colorColumn(pixels(5), Coloret.GREEN));
+        final Div0 expandBottomWithColumn = Gx.INSTANCE.colorColumn(pixels(10), Coloret.BLACK)
+              .expandDown(Gx.INSTANCE.colorColumn(pixels(5), Coloret.GREEN));
 
         presentation = expandBottomWithColumn.present(human, pole, Observer.EMPTY);
         final float height = presentation.getHeight();
@@ -116,8 +114,8 @@ public class Div0UnitTest {
 
     @Test
     public void expandBottomWithColumn_movesExpansionFrameDown() throws Exception {
-        final Div0 expandBottomWithColumn = gapColumn(pixels(10))
-              .expandDown(colorColumn(pixels(5), Coloret.GREEN));
+        final Div0 expandBottomWithColumn = Gx.INSTANCE.gapColumn(pixels(10))
+              .expandDown(Gx.INSTANCE.colorColumn(pixels(5), Coloret.GREEN));
 
         presentation = expandBottomWithColumn.present(human, pole, Observer.EMPTY);
         assertEquals(10, frames.get(0).getVertical().getStart(), .001);

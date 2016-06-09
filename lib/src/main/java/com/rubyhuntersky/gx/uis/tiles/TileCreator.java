@@ -6,9 +6,9 @@ import com.rubyhuntersky.gx.Gx;
 import com.rubyhuntersky.gx.basics.Sizelet;
 import com.rubyhuntersky.gx.basics.TextStylet;
 import com.rubyhuntersky.gx.devices.mosaics.Mosaic;
+import com.rubyhuntersky.gx.internal.presenters.Presenter;
 import com.rubyhuntersky.gx.presentations.BooleanPresentation;
 import com.rubyhuntersky.gx.uis.OnPresent;
-import com.rubyhuntersky.gx.internal.presenters.Presenter;
 
 /**
  * @author wehjin
@@ -24,7 +24,7 @@ public class TileCreator {
             @NonNull
             @Override
             public Tile0 onBind(final String condition) {
-                return Gx.textTile(condition, textStylet);
+                return Gx.INSTANCE.textTile(condition, textStylet);
             }
         });
     }

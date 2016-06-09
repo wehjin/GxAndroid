@@ -24,7 +24,7 @@ import java.util.ArrayList;
 
 import static com.rubyhuntersky.coloret.Coloret.BLACK;
 import static com.rubyhuntersky.coloret.Coloret.GREEN;
-import static com.rubyhuntersky.gx.Gx.colorBar;
+import static com.rubyhuntersky.gx.Gx.INSTANCE;
 import static com.rubyhuntersky.gx.basics.Sizelet.pixels;
 import static org.junit.Assert.assertEquals;
 
@@ -75,28 +75,28 @@ public class Span0UnitTest {
 
     @Test
     public void expandStart_movesEndFrame() throws Exception {
-        final Span0 ui = colorBar(BLACK, pixels(30)).expandStart(colorBar(GREEN, pixels(50)));
+        final Span0 ui = INSTANCE.colorBar(BLACK, pixels(30)).expandStart(INSTANCE.colorBar(GREEN, pixels(50)));
         presentation = ui.present(human, bar, Observer.EMPTY);
         assertEquals(50, frames.get(1).getHorizontal().getStart(), .0001);
     }
 
     @Test
     public void expandStart_combinesWidths() throws Exception {
-        final Span0 ui = colorBar(BLACK, pixels(30)).expandStart(colorBar(GREEN, pixels(50)));
+        final Span0 ui = INSTANCE.colorBar(BLACK, pixels(30)).expandStart(INSTANCE.colorBar(GREEN, pixels(50)));
         presentation = ui.present(human, bar, Observer.EMPTY);
         assertEquals(80, presentation.getWidth(), .0001);
     }
 
     @Test
     public void padStart_movesFrame() throws Exception {
-        final Span0 padStartUi = colorBar(BLACK, pixels(30)).padStart(pixels(10));
+        final Span0 padStartUi = INSTANCE.colorBar(BLACK, pixels(30)).padStart(pixels(10));
         presentation = padStartUi.present(human, bar, Observer.EMPTY);
         assertEquals(10, frames.get(0).getHorizontal().getStart(), .0001);
     }
 
     @Test
     public void padStart_increasesWidth() throws Exception {
-        final Span0 padStartUi = colorBar(BLACK, pixels(30)).padStart(pixels(10));
+        final Span0 padStartUi = INSTANCE.colorBar(BLACK, pixels(30)).padStart(pixels(10));
         presentation = padStartUi.present(human, bar, Observer.EMPTY);
         assertEquals(40, presentation.getWidth(), .0001);
     }
