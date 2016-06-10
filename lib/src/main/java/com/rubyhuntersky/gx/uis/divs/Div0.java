@@ -258,11 +258,6 @@ public abstract class Div0 implements Ui0<Pole> {
                                                                         }
 
                                                                         @Override
-                                                                        public void onEnd() {
-                                                                            // Do nothing.
-                                                                        }
-
-                                                                        @Override
                                                                         public void onError(@NonNull Throwable throwable) {
                                                                             presenter.onError(throwable);
                                                                         }

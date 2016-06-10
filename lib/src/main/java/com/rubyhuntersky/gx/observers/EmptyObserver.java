@@ -15,11 +15,6 @@ public class EmptyObserver implements Observer {
     }
 
     @Override
-    public void onEnd() {
-        // Do nothing
-    }
-
-    @Override
     public void onError(@NonNull Throwable throwable) {
         // Do nothing
     }

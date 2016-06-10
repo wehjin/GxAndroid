@@ -86,10 +86,6 @@ open class MainActivity : AppCompatActivity() {
             Log.d(tag, "onReaction $reaction")
         }
 
-        override fun onEnd() {
-            Log.d(tag, "onEnd")
-        }
-
         override fun onError(throwable: Throwable) {
             Log.e(tag, "onError", throwable)
         }

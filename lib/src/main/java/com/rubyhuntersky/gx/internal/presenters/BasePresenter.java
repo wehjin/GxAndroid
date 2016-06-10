@@ -77,14 +77,6 @@ public abstract class BasePresenter<T> implements Presenter<T> {
     }
 
     @Override
-    public void onEnd() {
-        if (isCancelled)
-            return;
-        cancel();
-        observer.onEnd();
-    }
-
-    @Override
     public void onError(@NonNull Throwable throwable) {
         if (isCancelled)
             return;

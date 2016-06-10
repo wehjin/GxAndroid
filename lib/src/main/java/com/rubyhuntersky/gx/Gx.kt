@@ -151,10 +151,6 @@ object Gx {
                             }
                         }
 
-                        override fun onEnd() {
-                            presenter.onEnd()
-                        }
-
                         override fun onError(throwable: Throwable) {
                             presenter.onError(throwable)
                         }
@@ -185,10 +181,6 @@ object Gx {
                                 menuPresentation?.cancel()
                                 presentLauncher(reaction.tag as Int)
                             }
-                        }
-
-                        override fun onEnd() {
-                            presenter.onEnd()
                         }
 
                         override fun onError(throwable: Throwable) {

@@ -73,11 +73,6 @@ public abstract class Div5<C1, C2, C3, C4, C5> {
                     }
 
                     @Override
-                    public void onEnd() {
-                        switchPresenter.onEnd();
-                    }
-
-                    @Override
                     public void onError(@NonNull Throwable throwable) {
                         switchPresenter.onError(throwable);
                     }

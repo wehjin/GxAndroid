@@ -82,11 +82,6 @@ public abstract class Div3<C1, C2, C3> {
                     }
 
                     @Override
-                    public void onEnd() {
-                        presenter.onEnd();
-                    }
-
-                    @Override
                     public void onError(@NonNull Throwable throwable) {
                         presenter.onError(throwable);
                     }

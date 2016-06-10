@@ -63,11 +63,6 @@ public class SwitchPresenter<T> implements Presenter<T> {
     }
 
     @Override
-    public void onEnd() {
-        observer.onEnd();
-    }
-
-    @Override
     public void onError(@NonNull Throwable throwable) {
         observer.onError(throwable);
     }

@@ -2,12 +2,12 @@ package com.rubyhuntersky.gx.uis.tiles.operations;
 
 import android.support.annotation.NonNull;
 
-import com.rubyhuntersky.gx.observers.Observer;
-import com.rubyhuntersky.gx.reactions.Reaction;
-import com.rubyhuntersky.gx.presentations.Presentation;
-import com.rubyhuntersky.gx.uis.OnPresent;
-import com.rubyhuntersky.gx.internal.presenters.Presenter;
 import com.rubyhuntersky.gx.devices.mosaics.Mosaic;
+import com.rubyhuntersky.gx.internal.presenters.Presenter;
+import com.rubyhuntersky.gx.observers.Observer;
+import com.rubyhuntersky.gx.presentations.Presentation;
+import com.rubyhuntersky.gx.reactions.Reaction;
+import com.rubyhuntersky.gx.uis.OnPresent;
 import com.rubyhuntersky.gx.uis.tiles.Tile0;
 
 /**
@@ -35,11 +35,6 @@ public class NameTileOperation0 extends TileOperation0 {
                                                                    public void onReaction(@NonNull Reaction reaction) {
                                                                        reaction.setSource(name);
                                                                        presenter.onReaction(reaction);
-                                                                   }
-
-                                                                   @Override
-                                                                   public void onEnd() {
-                                                                       presenter.onEnd();
                                                                    }
 
                                                                    @Override

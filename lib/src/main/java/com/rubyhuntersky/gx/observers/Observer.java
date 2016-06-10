@@ -13,6 +13,5 @@ public interface Observer {
     Observer EMPTY = new EmptyObserver();
 
     void onReaction(@NonNull Reaction reaction);
-    void onEnd();
     void onError(@NonNull Throwable throwable);
 }
