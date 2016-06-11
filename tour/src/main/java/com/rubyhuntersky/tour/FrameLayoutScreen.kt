@@ -25,8 +25,7 @@ import com.rubyhuntersky.gx.internal.shapes.ViewShape
 import com.rubyhuntersky.gx.internal.surface.Jester
 import com.rubyhuntersky.gx.internal.surface.MoveReaction
 import com.rubyhuntersky.gx.internal.surface.UpReaction
-import com.rubyhuntersky.gx.observers.Observer
-import com.rubyhuntersky.gx.presentations.Presentation
+import com.rubyhuntersky.gx.uis.divs.Div
 import com.rubyhuntersky.gx.uis.divs.Div0
 import java.util.*
 
@@ -43,54 +42,43 @@ class FrameLayoutScreen(val frameLayout: FrameLayout, val human: Human) : Screen
         frameLayout.setOnTouchListener(surfaceController.newTouchListener)
     }
 
-    override fun present(div: Div0, observer: Observer): Presentation {
-        return object : Presentation {
-            var cancelled = false
-            var subPresentation: Presentation? = null
-            val subFrameElevation = 100f
-            val subFrame = object : FrameLayout(context) {
-                private val screen = FrameLayoutScreen(this, human)
+    override fun present(div: Div0, observer: Div.Observer): Div.Presentation {
+        return object : Div.BooleanPresentation() {
 
-                fun onWidth(width: Int) {
-                    val pole = Pole(width.toFloat(), 0f, 0, screen)
-                    subPresentation?.cancel()
-                    subPresentation = div.present(human, pole, observer)
-                }
+            var subFrame: FrameLayout? = null
+            var subPresentation: Div.Presentation? = null
 
-                override fun onLayout(changed: Boolean, left: Int, top: Int, right: Int, bottom: Int) {
-                    super.onLayout(changed, left, top, right, bottom)
-                    if (changed) {
-                        this.postDelayed({ onWidth(right - left) }, 1)
+            override fun onPresent() {
+                subFrame = object : FrameLayout(context) {
+                    private val screen = FrameLayoutScreen(this, human)
+
+                    init {
+                        setBackgroundColor(0xc0000000.toInt())
+                        setElevation(this, 100f) // TODO set real elevation
+                    }
+
+                    override fun onLayout(changed: Boolean, left: Int, top: Int, right: Int, bottom: Int) {
+                        super.onLayout(changed, left, top, right, bottom)
+                        if (changed) {
+                            this.postDelayed({ onWidth(right - left) }, 1)
+                        }
+                    }
+
+                    fun onWidth(width: Int) {
+                        val pole = Pole(width.toFloat(), 0f, 0, screen)
+                        subPresentation?.cancel()
+                        subPresentation = div.present(human, pole, observer)
                     }
                 }
-            }
 
-            init {
-                Log.d(tag, "subpresent ${subFrame.hashCode()}")
-                subFrame.setBackgroundColor(0xc0000000.toInt())
-                setElevation(subFrame, subFrameElevation)
+                Log.d(tag, "subpresent ${subFrame!!.hashCode()}")
                 frameLayout.addView(subFrame, MATCH_PARENT, MATCH_PARENT)
             }
 
-            override fun getWidth(): Float {
-                return width
-            }
-
-            override fun getHeight(): Float {
-                return height
-            }
-
-            override fun isCancelled(): Boolean {
-                return cancelled
-            }
-
-            override fun cancel() {
-                if (!cancelled) {
-                    Log.d(tag, "subpresent cancel ${subFrame.hashCode()}")
-                    cancelled = true
-                    subPresentation?.cancel()
-                    frameLayout.removeView(subFrame)
-                }
+            override fun onCancel() {
+                subPresentation?.cancel()
+                frameLayout.removeView(subFrame!!)
+                Log.d(tag, "subpresent cancel ${subFrame!!.hashCode()}")
             }
         }
     }

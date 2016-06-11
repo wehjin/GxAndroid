@@ -8,14 +8,14 @@ import com.rubyhuntersky.coloret.Coloret
 import com.rubyhuntersky.gx.basics.Frame
 import com.rubyhuntersky.gx.basics.Sizelet
 import com.rubyhuntersky.gx.basics.TextStylet
+import com.rubyhuntersky.gx.internal.patches.Patch
+import com.rubyhuntersky.gx.internal.presenters.SwitchDivPresenter
 import com.rubyhuntersky.gx.internal.shapes.RectangleShape
 import com.rubyhuntersky.gx.internal.shapes.ViewShape
-import com.rubyhuntersky.gx.observers.Observer
-import com.rubyhuntersky.gx.presentations.BooleanPresentation
 import com.rubyhuntersky.gx.presentations.PatchPresentation
-import com.rubyhuntersky.gx.presentations.Presentation
 import com.rubyhuntersky.gx.reactions.Reaction
 import com.rubyhuntersky.gx.reactions.TapReaction
+import com.rubyhuntersky.gx.uis.divs.Div
 import com.rubyhuntersky.gx.uis.divs.Div0
 import com.rubyhuntersky.gx.uis.spans.Span0
 import com.rubyhuntersky.gx.uis.tiles.Tile0
@@ -68,6 +68,38 @@ object Gx {
         }
     }
 
+    fun <UnboundDiv> printReadEvaluate(repl: Div.PrintReadEvaluater<UnboundDiv>, unbound: UnboundDiv): Div0 {
+        return Div0.create(object : Div.OnPresent {
+
+            override fun onPresent(presenter: Div.Presenter) {
+                val human = presenter.human
+                val pole = presenter.pole
+                val switchPresenter = SwitchDivPresenter(human, pole, presenter)
+                presenter.addPresentation(switchPresenter)
+                present(repl, switchPresenter)
+            }
+
+            internal fun present(repl: Div.PrintReadEvaluater<UnboundDiv>, switchPresenter: SwitchDivPresenter) {
+                if (switchPresenter.isCancelled)
+                    return
+                val bound = repl.print(unbound)
+                val human = switchPresenter.human
+                val pole = switchPresenter.device
+                switchPresenter.setPresentation(bound.present(human, pole, object : Div.ForwardingObserver(switchPresenter) {
+                    override fun onReaction(reaction: Reaction) {
+                        if (switchPresenter.isCancelled)
+                            return
+                        repl.read(reaction)
+                        if (repl.eval()) {
+                            present(repl, switchPresenter)
+                        }
+                    }
+                }))
+            }
+        })
+    }
+
+
     fun textColumn(textString: String, textStylet: TextStylet): Div0 {
         return textTile(textString, textStylet).toColumn()
     }
@@ -77,30 +109,29 @@ object Gx {
     }
 
     fun colorColumn(heightlet: Sizelet, coloret: Coloret?): Div0 {
-        return Div0.create { presenter ->
-            val pole = presenter.device
-            val height = heightlet.toFloat(presenter.human, pole.relatedHeight)
-            val frame = Frame(pole.fixedWidth, height, pole.elevation)
-            val patch = if (coloret == null)
-                null
-            else
-                pole.addPatch(frame, RectangleShape(), coloret.toArgb())
-            val presentation = object : BooleanPresentation() {
+        val onPresent: Div.OnPresent = object : Div.OnPresent {
+            override fun onPresent(presenter: Div.Presenter) {
+                presenter.addPresentation(object : Div.PresenterPresentation(presenter) {
 
-                override fun getWidth(): Float {
-                    return pole.fixedWidth
-                }
+                    var patch: Patch? = null
 
-                override fun getHeight(): Float {
-                    return height
-                }
+                    init {
+                        val height = heightlet.toFloat(human, pole.relatedHeight)
+                        val frame = Frame(pole.fixedWidth, height, pole.elevation)
+                        patch = if (coloret == null)
+                            null
+                        else
+                            pole.addPatch(frame, RectangleShape(), coloret.toArgb())
+                        presenter.onHeight(height)
+                    }
 
-                override fun onCancel() {
-                    patch?.remove()
-                }
+                    override fun onCancel() {
+                        patch?.remove()
+                    }
+                })
             }
-            presenter.addPresentation(presentation)
         }
+        return Div0.create(onPresent)
     }
 
     val moreIndicator: Div0 by lazy {
@@ -113,82 +144,63 @@ object Gx {
     }
 
     fun dropDownMenuDiv(startIndex: Int, items: List<Div0>): Div0 {
+        return Div0.create(object : Div.OnPresent {
+            override fun onPresent(presenter: Div.Presenter) {
+                object : Div.PresenterPresentation(presenter) {
+                    var launcherPresentation: Div.Presentation? = null
+                    var menuPresentation: Div.Presentation? = null
 
-        return Div0.create({ presenter ->
-
-            presenter.addPresentation(object : BooleanPresentation() {
-
-                val pole = presenter.device
-                val human = presenter.human
-                var launcherPresentation: Presentation? = null
-                var menuPresentation: Presentation? = null
-
-                init {
-                    presentLauncher(startIndex)
-                }
-
-                override fun getWidth(): Float {
-                    return pole.fixedWidth
-                }
-
-                override fun getHeight(): Float {
-                    return launcherPresentation?.height ?: 0f
-                }
-
-                override fun onCancel() {
-                    menuPresentation?.cancel()
-                    launcherPresentation?.cancel()
-                }
-
-                fun presentLauncher(index: Int) {
-                    val item = items[index].padVertical(Sizelet.QUARTER_FINGER)
-                    val launcher = item.placeBefore(moreIndicator, 1, .5f).enableTap("launcher")
-                    launcherPresentation?.cancel()
-                    launcherPresentation = launcher.present(human, pole, object : Observer {
-                        override fun onReaction(reaction: Reaction) {
-                            if (reaction is TapReaction<*>) {
-                                presentMenu(index)
-                            }
-                        }
-
-                        override fun onError(throwable: Throwable) {
-                            presenter.onError(throwable)
-                        }
-                    })
-                }
-
-                fun presentMenu(launchIndex: Int) {
-                    var menu: Div0? = null
-                    var index = 0
-                    for (item: Div0 in items) {
-                        val paddedItem = item.padVertical(Sizelet.THIRD_FINGER).enableTap(index)
-                                .enableTap(index)
-                        menu = menu
-                                ?.expandDown(colorColumn(Sizelet.readables(.2f), com.rubyhuntersky.coloret.Coloret.MAGENTA))
-                                ?.expandDown(paddedItem)
-                                ?: paddedItem
-                        index++
+                    init {
+                        presentLauncher(startIndex)
                     }
-                    menu = menu
-                            ?.padVertical(Sizelet.READABLE)
-                            ?.placeBefore(colorColumn(Sizelet.PREVIOUS, com.rubyhuntersky.coloret.Coloret.WHITE), 1)
-                            ?: return
 
-                    menuPresentation?.cancel()
-                    menuPresentation = pole.present(menu, object : Observer {
-                        override fun onReaction(reaction: Reaction) {
-                            if (reaction is TapReaction<*>) {
-                                menuPresentation?.cancel()
-                                presentLauncher(reaction.tag as Int)
+                    override fun onCancel() {
+                        menuPresentation?.cancel()
+                        launcherPresentation?.cancel()
+                    }
+
+                    fun presentLauncher(index: Int) {
+                        val item = items[index].padVertical(Sizelet.QUARTER_FINGER)
+                        val launcher = item.placeBefore(moreIndicator, 1, .5f).enableTap("launcher")
+                        launcherPresentation?.cancel()
+                        launcherPresentation = launcher.present(human, pole, object : Div.ForwardingObserver(presenter) {
+                            override fun onReaction(reaction: Reaction) {
+                                if (reaction is TapReaction<*>) {
+                                    presentMenu(index)
+                                }
                             }
-                        }
+                        })
+                    }
 
-                        override fun onError(throwable: Throwable) {
-                            presenter.onError(throwable)
+                    fun presentMenu(launchIndex: Int) {
+                        var menu: Div0? = null
+                        var index = 0
+                        for (item: Div0 in items) {
+                            val paddedItem = item.padVertical(Sizelet.THIRD_FINGER).enableTap(index)
+                                    .enableTap(index)
+                            menu = menu
+                                    ?.expandDown(colorColumn(Sizelet.readables(.2f), com.rubyhuntersky.coloret.Coloret.MAGENTA))
+                                    ?.expandDown(paddedItem)
+                                    ?: paddedItem
+                            index++
                         }
-                    })
+                        menu = menu
+                                ?.padVertical(Sizelet.READABLE)
+                                ?.placeBefore(colorColumn(Sizelet.PREVIOUS, com.rubyhuntersky.coloret.Coloret.WHITE), 1)
+                                ?: return
+
+                        menuPresentation?.cancel()
+                        menuPresentation = pole.present(menu, object : Div.ForwardingObserver(presenter) {
+                            override fun onReaction(reaction: Reaction) {
+                                if (reaction is TapReaction<*>) {
+                                    menuPresentation?.cancel()
+                                    presentLauncher(reaction.tag as Int)
+                                }
+                            }
+                        })
+                    }
                 }
-            })
+            }
         })
     }
 }

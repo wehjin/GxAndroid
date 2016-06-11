@@ -2,13 +2,12 @@ package com.rubyhuntersky.gx.internal.interchange;
 
 import android.support.annotation.NonNull;
 
+import com.rubyhuntersky.gx.Human;
 import com.rubyhuntersky.gx.devices.mosaics.Mosaic;
 import com.rubyhuntersky.gx.devices.mosaics.ShiftMosaic;
 import com.rubyhuntersky.gx.devices.poles.Pole;
-import com.rubyhuntersky.gx.internal.presenters.Presenter;
 import com.rubyhuntersky.gx.presentations.Presentation;
-import com.rubyhuntersky.gx.presentations.ResizePresentation;
-import com.rubyhuntersky.gx.uis.OnPresent;
+import com.rubyhuntersky.gx.uis.divs.Div;
 import com.rubyhuntersky.gx.uis.divs.Div0;
 import com.rubyhuntersky.gx.uis.divs.Div1;
 import com.rubyhuntersky.gx.uis.divs.Div2;
@@ -24,22 +23,32 @@ import com.rubyhuntersky.gx.uis.tiles.Tile2;
 public class ToColumnOperation {
 
     public Div0 applyTo(final Tile0 tile0, final float anchor) {
-        return Div0.create(new OnPresent<Pole>() {
+        return Div0.create(new Div.OnPresent() {
             @Override
-            public void onPresent(Presenter<Pole> presenter) {
-                Pole pole = presenter.getDevice();
-                final Mosaic mosaic = new Mosaic(pole.getFixedWidth(),
-                                                 pole.getRelatedHeight(),
-                                                 pole.getElevation(),
-                                                 pole);
-                final ShiftMosaic frameShiftTile = mosaic.withShift();
-                final Presentation presentation = tile0.present(presenter.getHuman(), frameShiftTile, presenter);
-                final float presentationWidth = presentation.getWidth();
-                final float extraWidth = pole.getFixedWidth() - presentationWidth;
-                frameShiftTile.doShift(extraWidth * anchor, 0);
-                presenter.addPresentation(new ResizePresentation(pole.getFixedWidth(),
-                                                                 presentation.getHeight(),
-                                                                 presentation));
+            public void onPresent(@NonNull final Div.Presenter presenter) {
+                presenter.addPresentation(new Div.PresenterPresentation(presenter) {
+
+                    private Presentation presentation;
+
+                    {
+                        final Human human = getHuman();
+                        final Pole pole = getPole();
+                        final Mosaic mosaic = new Mosaic(pole.getFixedWidth(),
+                                                         pole.getRelatedHeight(),
+                                                         pole.getElevation(),
+                                                         pole);
+                        final ShiftMosaic shiftMosaic = mosaic.withShift();
+                        presentation = tile0.present(human, shiftMosaic, presenter);
+                        final float extraWidth = pole.getFixedWidth() - presentation.getWidth();
+                        shiftMosaic.doShift(extraWidth * anchor, 0);
+                        presenter.onHeight(presentation.getHeight());
+                    }
+
+                    @Override
+                    public void onCancel() {
+                        presentation.cancel();
+                    }
+                });
             }
         });
     }

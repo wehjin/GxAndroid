@@ -17,7 +17,6 @@ public class ShiftPatch implements Patch {
     private final int argbColor;
     private final Screen device;
     private Patch patch;
-    private boolean didShift;
     private boolean didRemove;
 
     public ShiftPatch(Frame frame, Shape shape, int argbColor, @NonNull Screen device) {
@@ -28,10 +27,12 @@ public class ShiftPatch implements Patch {
     }
 
     public void setShift(float horizontal, float vertical) {
-        if (didRemove || didShift) {
+        if (didRemove) {
             return;
         }
-        didShift = true;
+        if (patch != null) {
+            patch.remove();
+        }
         patch = device.addPatch(frame.withShift(horizontal, vertical), shape, argbColor);
     }
 

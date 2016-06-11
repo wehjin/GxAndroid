@@ -11,18 +11,11 @@ import com.rubyhuntersky.gx.basics.Sizelet;
 import com.rubyhuntersky.gx.basics.Spot;
 import com.rubyhuntersky.gx.devices.poles.Pole;
 import com.rubyhuntersky.gx.devices.poles.ShiftPole;
-import com.rubyhuntersky.gx.internal.presenters.BasePresenter;
-import com.rubyhuntersky.gx.internal.presenters.Presenter;
 import com.rubyhuntersky.gx.internal.surface.Jester;
 import com.rubyhuntersky.gx.internal.surface.MoveReaction;
 import com.rubyhuntersky.gx.internal.surface.UpReaction;
-import com.rubyhuntersky.gx.observers.Observer;
-import com.rubyhuntersky.gx.presentations.Presentation;
-import com.rubyhuntersky.gx.presentations.ResizePresentation;
 import com.rubyhuntersky.gx.reactions.Reaction;
 import com.rubyhuntersky.gx.reactions.TapReaction;
-import com.rubyhuntersky.gx.uis.OnPresent;
-import com.rubyhuntersky.gx.uis.core.Ui0;
 import com.rubyhuntersky.gx.uis.divs.operations.ExpandDownDivOperation1;
 import com.rubyhuntersky.gx.uis.divs.operations.ExpandVerticalDivOperation0;
 import com.rubyhuntersky.gx.uis.divs.operations.PadHorizontalDivOperation0;
@@ -36,133 +29,71 @@ import org.jetbrains.annotations.Nullable;
  * @since 1/23/16.
  */
 
-public abstract class Div0 implements Ui0<Pole> {
+public abstract class Div0 implements Div {
 
     static final String TAG = Div0.class.getSimpleName();
 
-    static final public Div0 EMPTY = new Div0() {
-        @Override
-        public Presentation present(Human human, Pole pole, Observer observer) {
-            return Presentation.EMPTY;
-        }
-    };
+    @NonNull
+    public abstract Div.Presentation present(@NonNull Human human, @NonNull Pole pole, @NonNull Div.Observer observer);
 
     private Div0() {
     }
 
-    public static Div0 create(final OnPresent<Pole> onPresent) {
+    public static Div0 create(final Div.OnPresent onPresent) {
         return new Div0() {
+            @NonNull
             @Override
-            public Presentation present(Human human, final Pole pole, Observer observer) {
-                final BasePresenter<Pole> presenter = new BasePresenter<Pole>(human, pole, observer) {
-                    @Override
-                    public float getWidth() {
-                        return device.getFixedWidth();
-                    }
-
-                    @Override
-                    public float getHeight() {
-                        float union = 0;
-                        for (Presentation presentation : presentations) {
-                            union = Math.max(union, presentation.getHeight());
-                        }
-                        return union;
-                    }
-                };
+            public Div.Presentation present(@NonNull Human human, @NonNull final Pole pole, @NonNull Div.Observer observer) {
+                final Div.BasePresenter presenter = new Div.BasePresenter(human, pole, observer);
                 onPresent.onPresent(presenter);
                 return presenter;
             }
         };
     }
 
-    public abstract Presentation present(Human human, Pole pole, Observer observer);
-
     public <T> Div0 enableTap(final T label) {
         final Div0 upstream = this;
-        return create(new OnPresent<Pole>() {
+        return create(new Div.OnPresent() {
             @Override
-            public void onPresent(final Presenter<Pole> presenter) {
-                final Human human = presenter.getHuman();
-                final Pole pole = presenter.getDevice();
-                Presentation presentation = upstream.present(human, pole, presenter);
-                presenter.addPresentation(presentation);
+            public void onPresent(@NonNull final Div.Presenter presenter) {
+                presenter.addPresentation(new Div.PresenterPresentation(presenter) {
 
-                final Frame frame = new Frame(presentation.getWidth(), presentation.getHeight(), pole.getElevation());
-                final Removable removable = pole.addSurface(frame, new Jester() {
-                    @Nullable
-                    @Override
-                    public Contact getContact(@NotNull final Spot downSpot) {
+                    private Presentation presentation;
+                    private Removable surface;
 
-                        return new Contact() {
+                    {
+                        presentation = upstream.present(getHuman(), getPole(), new ForwardingObserver(presenter) {
                             @Override
-                            public void doCancel() {
-                                Log.d(TAG, "doCancel");
+                            public void onHeight(float height) {
+                                updateSurface(height);
+                                super.onHeight(height);
                             }
+                        });
 
-                            @NotNull
-                            @Override
-                            public MoveReaction getMoveReaction(@NotNull Spot spot) {
-                                if (isOutOfBounds(spot)) {
-                                    return MoveReaction.CANCEL;
-                                } else {
-                                    return MoveReaction.CONTINUE;
-                                }
-                            }
-
-                            private boolean isOutOfBounds(@NotNull Spot spot) {
-                                return spot.distanceSquared(downSpot) > 100;
-                            }
-
-                            @NotNull
-                            @Override
-                            public Contact doMove(@NotNull Spot spot) {
-                                return this;
-                            }
-
-                            @NotNull
-                            @Override
-                            public UpReaction getUpReaction(@NotNull Spot spot) {
-                                if (isOutOfBounds(spot)) {
-                                    return UpReaction.CANCEL;
-                                } else {
-                                    return UpReaction.CONFIRM;
-                                }
-                            }
-
-                            @Override
-                            public void doUp(@NotNull Spot spot) {
-                                long time = System.currentTimeMillis();
-                                Log.d(TAG, "doUp " + time);
-                                presenter.onReaction(new TapReaction<>(label, "enableTap", time));
-                            }
-                        };
-                    }
-                });
-                presenter.addPresentation(new Presentation() {
-
-                    boolean cancelled = false;
-
-                    @Override
-                    public float getWidth() {
-                        return frame.getHorizontal().toLength();
                     }
 
-                    @Override
-                    public float getHeight() {
-                        return frame.getVertical().toLength();
-                    }
-
-                    @Override
-                    public boolean isCancelled() {
-                        return cancelled;
-                    }
-
-                    @Override
-                    public void cancel() {
-                        if (!cancelled) {
-                            cancelled = true;
-                            removable.remove();
+                    private void updateSurface(float height) {
+                        if (surface != null) {
+                            surface.remove();
                         }
+                        final Pole pole = getPole();
+                        surface = pole.addSurface(new Frame(pole.getWidth(), height, pole.getElevation()),
+                                                  new Jester() {
+                                                      @Nullable
+                                                      @Override
+                                                      public Contact getContact(@NotNull final Spot downSpot) {
+
+                                                          return new TapContact<>(downSpot, presenter, label);
+                                                      }
+                                                  });
+                    }
+
+                    @Override
+                    public void onCancel() {
+                        if (surface != null) {
+                            surface.remove();
+                        }
+                        presentation.cancel();
                     }
                 });
             }
@@ -174,19 +105,20 @@ public abstract class Div0 implements Ui0<Pole> {
     }
 
     public Div0 padTop(final Sizelet padlet) {
-        final Div0 ui = this;
-        return create(new OnPresent<Pole>() {
+        final Div0 upstream = this;
+        return create(new Div.OnPresent() {
             @Override
-            public void onPresent(Presenter<Pole> presenter) {
+            public void onPresent(@NonNull final Div.Presenter presenter) {
                 final Human human = presenter.getHuman();
-                final Pole pole = presenter.getDevice();
-                final ShiftPole newColumn = pole.withShift();
-                final Presentation presentation = ui.present(human, newColumn, presenter);
-                final float height = presentation.getHeight();
-                final float padding = padlet.toFloat(human, height);
-                newColumn.doShift(0, padding);
-                final float newHeight = height + padding;
-                presenter.addPresentation(new ResizePresentation(pole.getFixedWidth(), newHeight, presentation));
+                final ShiftPole shiftPole = presenter.getPole().withShift();
+                presenter.addPresentation(upstream.present(human, shiftPole, new ForwardingObserver(presenter) {
+                    @Override
+                    public void onHeight(float height) {
+                        final float padding = padlet.toFloat(human, height);
+                        shiftPole.doShift(0, padding);
+                        super.onHeight(height + padding);
+                    }
+                }));
             }
         });
     }
@@ -196,19 +128,22 @@ public abstract class Div0 implements Ui0<Pole> {
     }
 
     public Div0 padVertical(final Sizelet padlet) {
-        final Div0 ui = this;
-        return create(new OnPresent<Pole>() {
+        final Div0 upstream = this;
+        return create(new Div.OnPresent() {
+
             @Override
-            public void onPresent(Presenter<Pole> presenter) {
+            public void onPresent(@NotNull final Presenter presenter) {
                 final Human human = presenter.getHuman();
-                final Pole pole = presenter.getDevice();
-                final ShiftPole newColumn = pole.withShift();
-                final Presentation presentation = ui.present(human, newColumn, presenter);
-                final float height = presentation.getHeight();
-                final float padding = padlet.toFloat(human, height);
-                newColumn.doShift(0, padding);
-                final float newHeight = height + 2 * padding;
-                presenter.addPresentation(new ResizePresentation(pole.getFixedWidth(), newHeight, presentation));
+                final ShiftPole shiftPole = presenter.getPole().withShift();
+                presenter.addPresentation(upstream.present(human, shiftPole, new ForwardingObserver(presenter) {
+                    @Override
+                    public void onHeight(float height) {
+                        final float padding = padlet.toFloat(human, height);
+                        shiftPole.doShift(0, padding);
+                        final float fullHeight = height + 2 * padding;
+                        super.onHeight(fullHeight);
+                    }
+                }));
             }
         });
     }
@@ -246,24 +181,75 @@ public abstract class Div0 implements Ui0<Pole> {
     }
 
     public Div0 isolate() {
-        return create(new OnPresent<Pole>() {
+        final Div0 upstream = Div0.this;
+        return create(new Div.OnPresent() {
             @Override
-            public void onPresent(final Presenter<Pole> presenter) {
-                final Presentation presentation = Div0.this.present(presenter.getHuman(),
-                                                                    presenter.getDevice(),
-                                                                    new Observer() {
-                                                                        @Override
-                                                                        public void onReaction(@NonNull Reaction reaction) {
-                                                                            // Do nothing.
-                                                                        }
-
-                                                                        @Override
-                                                                        public void onError(@NonNull Throwable throwable) {
-                                                                            presenter.onError(throwable);
-                                                                        }
-                                                                    });
-                presenter.addPresentation(presentation);
+            public void onPresent(@NonNull final Div.Presenter presenter) {
+                final Human human = presenter.getHuman();
+                final Pole pole = presenter.getPole();
+                presenter.addPresentation(upstream.present(human, pole, new Div.ForwardingObserver(presenter) {
+                    @Override
+                    public void onReaction(@NonNull Reaction reaction) {
+                        // Trap reaction. Do nothing.
+                    }
+                }));
             }
         });
+    }
+
+    private static class TapContact<T> implements Jester.Contact {
+        private final Spot downSpot;
+        private final Presenter presenter;
+        private final T label;
+
+        public TapContact(Spot downSpot, Presenter presenter, T label) {
+            this.downSpot = downSpot;
+            this.presenter = presenter;
+            this.label = label;
+        }
+
+        @Override
+        public void doCancel() {
+            Log.d(TAG, "doCancel");
+        }
+
+        @NotNull
+        @Override
+        public MoveReaction getMoveReaction(@NotNull Spot spot) {
+            if (isOutOfBounds(spot)) {
+                return MoveReaction.CANCEL;
+            } else {
+                return MoveReaction.CONTINUE;
+            }
+        }
+
+        private boolean isOutOfBounds(@NotNull Spot spot) {
+            return spot.distanceSquared(downSpot) > 100;
+        }
+
+        @NotNull
+        @Override
+        public Jester.Contact doMove(@NotNull Spot spot) {
+            return this;
+        }
+
+        @NotNull
+        @Override
+        public UpReaction getUpReaction(@NotNull Spot spot) {
+            if (isOutOfBounds(spot)) {
+                return UpReaction.CANCEL;
+            } else {
+                return UpReaction.CONFIRM;
+            }
+        }
+
+        @Override
+        public void doUp(@NotNull Spot spot) {
+            long time = System.currentTimeMillis();
+            Log.d(TAG, "doUp " + time);
+            presenter.onReaction(new TapReaction<>(label,
+                                                   "enableTap",
+                                                   time));
+        }
     }
 }

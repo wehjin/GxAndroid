@@ -1,14 +1,11 @@
 package com.rubyhuntersky.gx.uis.divs.operations;
 
 import android.support.annotation.NonNull;
-import android.util.Pair;
 
 import com.rubyhuntersky.gx.Human;
 import com.rubyhuntersky.gx.devices.poles.Pole;
 import com.rubyhuntersky.gx.devices.poles.ShiftPole;
-import com.rubyhuntersky.gx.internal.presenters.Presenter;
-import com.rubyhuntersky.gx.presentations.Presentation;
-import com.rubyhuntersky.gx.uis.OnPresent;
+import com.rubyhuntersky.gx.uis.divs.Div;
 import com.rubyhuntersky.gx.uis.divs.Div0;
 
 /**
@@ -37,33 +34,61 @@ public class PlaceBeforeDivOperation0 extends DivOperation0 {
 
     @Override
     public Div0 apply(final Div0 base) {
-        return Div0.create(new OnPresent<Pole>() {
+        return Div0.create(new Div.OnPresent() {
             @Override
-            public void onPresent(Presenter<Pole> presenter) {
-                Human human = presenter.getHuman();
-                Pole pole = presenter.getDevice();
-                final ShiftPole nearDelayPole = pole.withElevation(pole.getElevation() + gap).withShift();
-                final Presentation nearPresentation = base.present(human, nearDelayPole, presenter);
-                final float nearHeight = nearPresentation.getHeight();
+            public void onPresent(@NonNull final Div.Presenter presenter) {
+                presenter.addPresentation(new Div.PresenterPresentation(presenter) {
 
-                final ShiftPole farDelayPole = pole.withRelatedHeight(nearHeight).withShift();
-                final Presentation farPresentation = background.present(human, farDelayPole, presenter);
-                final float farHeight = farPresentation.getHeight();
+                    private ShiftPole nearPole;
+                    private Div.Presentation farPresentation = Div.CancelledPresentation.INSTANCE;
+                    private Div.Presentation nearPresentation = Div.CancelledPresentation.INSTANCE;
 
-                if (farHeight > nearHeight) {
-                    nearDelayPole.doShift(0, (farHeight - nearHeight) * anchor);
-                    farDelayPole.doShift(0, 0);
-                } else if (nearHeight > farHeight) {
-                    nearDelayPole.doShift(0, 0);
-                    farDelayPole.doShift(0, (nearHeight - farHeight) * anchor);
-                } else {
-                    nearDelayPole.doShift(0, 0);
-                    farDelayPole.doShift(0, 0);
-                }
+                    {
+                        final Human human = getHuman();
+                        final Pole pole = getPole();
+                        nearPole = pole.withElevation(pole.getElevation() + gap).withShift();
+                        nearPresentation = base.present(human, nearPole, new Div.ForwardingObserver(presenter) {
+                            @Override
+                            public void onHeight(float nearHeight) {
+                                presentFar(nearHeight);
+                            }
+                        });
 
-                final Pair<Presentation, Presentation> presentations = new Pair<>(nearPresentation, farPresentation);
-                presenter.addPresentation(presentations.first);
-                presenter.addPresentation(presentations.second);
+                    }
+
+                    private void presentFar(final float nearHeight) {
+                        final Human human = getHuman();
+                        final Pole pole = getPole();
+                        final ShiftPole farPole = pole.withRelatedHeight(nearHeight).withShift();
+                        farPresentation.cancel();
+                        farPresentation = background.present(human, farPole, new Div.ForwardingObserver(presenter) {
+                            @Override
+                            public void onHeight(float farHeight) {
+                                float maxHeight;
+                                if (farHeight > nearHeight) {
+                                    maxHeight = farHeight;
+                                    nearPole.doShift(0, (farHeight - nearHeight) * anchor);
+                                    farPole.doShift(0, 0);
+                                } else if (nearHeight > farHeight) {
+                                    maxHeight = nearHeight;
+                                    nearPole.doShift(0, 0);
+                                    farPole.doShift(0, (nearHeight - farHeight) * anchor);
+                                } else {
+                                    maxHeight = nearHeight;
+                                    nearPole.doShift(0, 0);
+                                    farPole.doShift(0, 0);
+                                }
+                                super.onHeight(maxHeight);
+                            }
+                        });
+                    }
+
+                    @Override
+                    public void onCancel() {
+                        farPresentation.cancel();
+                        nearPresentation.cancel();
+                    }
+                });
             }
         });
     }

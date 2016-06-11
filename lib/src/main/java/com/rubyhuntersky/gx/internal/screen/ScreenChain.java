@@ -10,8 +10,7 @@ import com.rubyhuntersky.gx.basics.TextStyle;
 import com.rubyhuntersky.gx.internal.patches.Patch;
 import com.rubyhuntersky.gx.internal.shapes.Shape;
 import com.rubyhuntersky.gx.internal.surface.Jester;
-import com.rubyhuntersky.gx.observers.Observer;
-import com.rubyhuntersky.gx.presentations.Presentation;
+import com.rubyhuntersky.gx.uis.divs.Div;
 import com.rubyhuntersky.gx.uis.divs.Div0;
 
 /**
@@ -51,7 +50,7 @@ public class ScreenChain implements Screen {
 
     @NonNull
     @Override
-    public Presentation present(@NonNull Div0 div, @NonNull Observer observer) {
+    public Div.Presentation present(@NonNull Div0 div, @NonNull Div.Observer observer) {
         return basis.present(div, observer);
     }
 }

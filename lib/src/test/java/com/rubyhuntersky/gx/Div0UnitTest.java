@@ -11,11 +11,9 @@ import com.rubyhuntersky.gx.basics.TextStyle;
 import com.rubyhuntersky.gx.devices.poles.Pole;
 import com.rubyhuntersky.gx.devices.poles.SeedPole;
 import com.rubyhuntersky.gx.internal.patches.Patch;
-import com.rubyhuntersky.gx.internal.presenters.Presenter;
 import com.rubyhuntersky.gx.internal.shapes.Shape;
-import com.rubyhuntersky.gx.observers.Observer;
-import com.rubyhuntersky.gx.presentations.Presentation;
-import com.rubyhuntersky.gx.uis.OnPresent;
+import com.rubyhuntersky.gx.reactions.Reaction;
+import com.rubyhuntersky.gx.uis.divs.Div;
 import com.rubyhuntersky.gx.uis.divs.Div0;
 
 import org.junit.After;
@@ -24,6 +22,7 @@ import org.junit.Test;
 
 import java.util.ArrayList;
 
+import static com.rubyhuntersky.coloret.Coloret.GREEN;
 import static com.rubyhuntersky.gx.basics.Sizelet.pixels;
 import static org.junit.Assert.assertEquals;
 
@@ -35,8 +34,10 @@ public class Div0UnitTest {
     private Human human;
     private Pole pole;
     private ArrayList<Frame> frames;
+    private Frame lastFrame;
     private Div0 padTopUi;
-    private Presentation presentation;
+    private Div.Presentation presentation;
+    private RecordingObserver recordingObserver;
 
     @Before
     public void setUp() throws Exception {
@@ -45,9 +46,15 @@ public class Div0UnitTest {
         pole = new SeedPole(100, 27, 5) {
             @NonNull
             @Override
-            public Patch addPatch(@NonNull Frame frame, @NonNull Shape shape, int argbColor) {
+            public Patch addPatch(@NonNull final Frame frame, @NonNull Shape shape, int argbColor) {
                 frames.add(frame);
-                return Patch.EMPTY;
+                lastFrame = frame;
+                return new Patch() {
+                    @Override
+                    public void remove() {
+                        frames.remove(frame);
+                    }
+                };
             }
 
             @NonNull
@@ -63,7 +70,8 @@ public class Div0UnitTest {
             }
         };
         padTopUi = Gx.INSTANCE.colorColumn(pixels(10), Coloret.BLACK).padTop(pixels(15));
-        presentation = Presentation.EMPTY;
+        presentation = Div.CancelledPresentation.INSTANCE;
+        recordingObserver = new RecordingObserver();
     }
 
     @After
@@ -74,14 +82,14 @@ public class Div0UnitTest {
     @Test
     public void expandVertical_increasesHeight() throws Exception {
         final Div0 verticalExpansion = Gx.INSTANCE.colorColumn(pixels(17), Coloret.BLACK).expandVertical(pixels(5));
-        presentation = verticalExpansion.present(human, pole, Observer.EMPTY);
-        assertEquals(27, presentation.getHeight(), .0001);
+        presentation = verticalExpansion.present(human, pole, recordingObserver);
+        assertEquals(27, recordingObserver.lastHeight, .0001);
     }
 
     @Test
     public void expandVertical_movesFrameDown() throws Exception {
         final Div0 verticalExpansion = Gx.INSTANCE.colorColumn(pixels(17), Coloret.BLACK).expandVertical(pixels(5));
-        presentation = verticalExpansion.present(human, pole, Observer.EMPTY);
+        presentation = verticalExpansion.present(human, pole, recordingObserver);
         Range vertical = frames.get(0).getVertical();
         assertEquals(5, vertical.getStart(), .0001);
         assertEquals(22, vertical.getEnd(), .0001);
@@ -89,47 +97,66 @@ public class Div0UnitTest {
 
     @Test
     public void padTop_addsPaddingToFrameTop() throws Exception {
-        final Presentation present = padTopUi.present(human, pole, Observer.EMPTY);
+        final Div.Presentation present = padTopUi.present(human, pole, recordingObserver);
         present.cancel();
-        assertEquals(15, frames.get(0).getVertical().getStart(), .001);
+        assertEquals(15, lastFrame.getVertical().getStart(), .001);
     }
 
     @Test
     public void padTop_addsPaddingToHeight() throws Exception {
-        final Presentation present = padTopUi.present(human, pole, Observer.EMPTY);
-        final float height = present.getHeight();
+        final Div.Presentation present = padTopUi.present(human, pole, recordingObserver);
         present.cancel();
-        assertEquals(25, height, .001);
+        assertEquals(25, recordingObserver.lastHeight, .001);
     }
 
     @Test
     public void expandBottomWithColumn_expandsPresentationHeight() throws Exception {
         final Div0 expandBottomWithColumn = Gx.INSTANCE.colorColumn(pixels(10), Coloret.BLACK)
-              .expandDown(Gx.INSTANCE.colorColumn(pixels(5), Coloret.GREEN));
+              .expandDown(Gx.INSTANCE.colorColumn(pixels(5), GREEN));
 
-        presentation = expandBottomWithColumn.present(human, pole, Observer.EMPTY);
-        final float height = presentation.getHeight();
-        assertEquals(15, height, .001);
+        presentation = expandBottomWithColumn.present(human, pole, recordingObserver);
+        assertEquals(15, recordingObserver.lastHeight, .001);
     }
 
     @Test
     public void expandBottomWithColumn_movesExpansionFrameDown() throws Exception {
-        final Div0 expandBottomWithColumn = Gx.INSTANCE.gapColumn(pixels(10))
-              .expandDown(Gx.INSTANCE.colorColumn(pixels(5), Coloret.GREEN));
+        final Gx gx = Gx.INSTANCE;
 
-        presentation = expandBottomWithColumn.present(human, pole, Observer.EMPTY);
+        final Div0 expandBottomWithColumn = gx.gapColumn(pixels(10)).expandDown(gx.colorColumn(pixels(5), GREEN));
+        presentation = expandBottomWithColumn.present(human, pole, recordingObserver);
         assertEquals(10, frames.get(0).getVertical().getStart(), .001);
     }
 
     @Test
     public void presentation_takesWidthFromColumn() throws Exception {
-        final Div0 div0 = Div0.create(new OnPresent<Pole>() {
+        final Div0 div0 = Div0.create(new Div.OnPresent() {
             @Override
-            public void onPresent(Presenter<Pole> presenter) {
+            public void onPresent(@NonNull Div.Presenter presenter) {
                 // Do nothing.
             }
         });
-        final Presentation presentation = div0.present(human, pole, Observer.EMPTY);
-        assertEquals(100, presentation.getWidth(), .001);
+        final Div.Presentation presentation = div0.present(human, pole, recordingObserver);
+        assertEquals(100, pole.getWidth(), .001);
+    }
+
+    static class RecordingObserver implements Div.Observer {
+        public float lastHeight;
+        public Reaction lastReaction;
+        public Throwable lastError;
+
+        @Override
+        public void onHeight(float height) {
+            this.lastHeight = height;
+        }
+
+        @Override
+        public void onReaction(@NonNull Reaction reaction) {
+            this.lastReaction = reaction;
+        }
+
+        @Override
+        public void onError(@NonNull Throwable throwable) {
+            this.lastError = throwable;
+        }
     }
 }

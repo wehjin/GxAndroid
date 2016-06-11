@@ -18,8 +18,8 @@ import com.rubyhuntersky.gx.basics.Sizelet.READABLE
 import com.rubyhuntersky.gx.basics.TextStylet.IMPORTANT_DARK
 import com.rubyhuntersky.gx.basics.TextStylet.READABLE_DARK
 import com.rubyhuntersky.gx.devices.poles.Pole
-import com.rubyhuntersky.gx.observers.Observer
 import com.rubyhuntersky.gx.reactions.Reaction
+import com.rubyhuntersky.gx.uis.divs.Div
 
 open class MainActivity : AppCompatActivity() {
     companion object {
@@ -78,9 +78,13 @@ open class MainActivity : AppCompatActivity() {
         Log.d(tag, "onResume mainFrame width $width")
     }
 
-    open class LogObserver : Observer {
+    open class LogObserver : Div.Observer {
 
         val tag = "${LogObserver::class.java.simpleName}${this.hashCode()}"
+
+        override fun onHeight(height: Float) {
+            Log.d(tag, "onHeight $height")
+        }
 
         override fun onReaction(reaction: Reaction) {
             Log.d(tag, "onReaction $reaction")

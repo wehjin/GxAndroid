@@ -25,8 +25,7 @@ import com.rubyhuntersky.gx.internal.shapes.Shape;
 import com.rubyhuntersky.gx.internal.shapes.TextShape;
 import com.rubyhuntersky.gx.internal.shapes.ViewShape;
 import com.rubyhuntersky.gx.internal.surface.Jester;
-import com.rubyhuntersky.gx.observers.Observer;
-import com.rubyhuntersky.gx.presentations.Presentation;
+import com.rubyhuntersky.gx.uis.divs.Div;
 import com.rubyhuntersky.gx.uis.divs.Div0;
 
 import kotlin.NotImplementedError;
@@ -100,7 +99,7 @@ public class ScreenView extends FrameLayout implements Screen {
 
     @NonNull
     @Override
-    public Presentation present(@NonNull Div0 div, @NonNull Observer observer) {
+    public Div.Presentation present(@NonNull Div0 div, @NonNull Div.Observer observer) {
         throw new UnsupportedOperationException("present/div0");
     }
 

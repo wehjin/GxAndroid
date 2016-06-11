@@ -3,17 +3,17 @@ package com.rubyhuntersky.gx.uis.divs;
 import android.support.annotation.NonNull;
 
 import com.rubyhuntersky.gx.basics.Sizelet;
-import com.rubyhuntersky.gx.devices.poles.Pole;
 import com.rubyhuntersky.gx.uis.divs.operations.ExpandDownDivOperation1;
 import com.rubyhuntersky.gx.uis.divs.operations.ExpandVerticalDivOperation0;
-import com.rubyhuntersky.gx.uis.core.Ui1;
 
 /**
  * @author wehjin
  * @since 1/30/16.
  */
 
-abstract public class Div1<C> implements Ui1<Pole, C> {
+abstract public class Div1<C> {
+
+    public abstract Div0 bind(C condition);
 
     private Div1() {
     }
@@ -26,9 +26,6 @@ abstract public class Div1<C> implements Ui1<Pole, C> {
             }
         };
     }
-
-    @Override
-    public abstract Div0 bind(C condition);
 
     public Div1<C> padBottom(final Sizelet padlet) {
         // TODO Test

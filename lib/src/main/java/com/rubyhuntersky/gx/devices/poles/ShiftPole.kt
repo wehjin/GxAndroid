@@ -19,71 +19,63 @@ import java.util.*
  */
 class ShiftPole(original: Pole) : Pole(original), ShiftDevice<Pole> {
 
-    private val pendingPatches = ArrayList<ShiftPatch>()
-    private val pendingSurfaces = ArrayList<ShiftSurface>()
-    private var didShift: Boolean = false
-    private var verticalShift: Float = 0.toFloat()
-    private var horizontalShift: Float = 0.toFloat()
-
-    override fun doShift(horizontal: Float, vertical: Float): ShiftPole {
-        if (didShift) {
-            return this
-        }
-        didShift = true
-        this.horizontalShift = horizontal
-        this.verticalShift = vertical
-        val shiftPatches = ArrayList(pendingPatches)
-        pendingPatches.clear()
-        for (patch in shiftPatches) {
-            patch.setShift(horizontal, vertical)
-        }
-        val surfaces = ArrayList(pendingSurfaces)
-        pendingSurfaces.clear()
-        for (pendingSurface in surfaces) {
-            pendingSurface.setShift(horizontal, vertical)
-        }
-        return this
-    }
+    private val patches = ArrayList<ShiftPatch>()
+    private val surfaces = ArrayList<ShiftSurface>()
+    private var verticalShift: Float = 0f
+    private var horizontalShift: Float = 0f
 
     override fun addPatch(frame: Frame, shape: Shape, argbColor: Int): Patch {
         val patch = ShiftPatch(frame, shape, argbColor, basis)
-        if (didShift) {
-            patch.setShift(horizontalShift, verticalShift)
-        } else {
-            pendingPatches.add(patch)
+        patch.setShift(horizontalShift, verticalShift)
+        patches.add(patch)
+        return Patch {
+            patches.remove(patch)
+            patch.remove()
         }
-        return patch
     }
 
     override fun addSurface(frame: Frame, jester: Jester): Removable {
         val surface = ShiftSurface(frame, jester, { frame, jester -> super.addSurface(frame, jester) })
-        if (didShift) {
-            surface.setShift(horizontalShift, verticalShift)
-            return surface
-        } else {
-            pendingSurfaces.add(surface)
-            return object : Removable {
-                override fun remove() {
-                    pendingSurfaces.remove(surface)
-                    surface.remove()
-                }
+        surface.setShift(horizontalShift, verticalShift)
+        surfaces.add(surface)
+        return object : Removable {
+            override fun remove() {
+                surfaces.remove(surface)
+                surface.remove()
             }
         }
     }
 
+    override fun doShift(horizontal: Float, vertical: Float): ShiftPole {
+        this.horizontalShift = horizontal
+        this.verticalShift = vertical
+        patches.forEach { it.setShift(horizontal, vertical) }
+        surfaces.forEach { it.setShift(horizontal, vertical) }
+        return this
+    }
+
     inner class ShiftSurface(val frame: Frame, val jester: Jester, val addSurface: (Frame, Jester) -> Removable) : Removable {
 
-        var shifted: Removable? = null
+        var shiftedSurface: Removable? = null
+        var removed = false
 
         fun setShift(horizontal: Float, vertical: Float) {
-            shifted ?: realizeShifted(horizontal, vertical)
+            if (removed) {
+                return;
+            }
+            shiftedSurface?.remove()
+            realizeShiftedSurface(horizontal, vertical)
         }
 
         override fun remove() {
-            shifted?.remove()
+            if (removed) {
+                return
+            }
+            removed = true
+            shiftedSurface?.remove()
         }
 
-        private fun realizeShifted(horizontal: Float, vertical: Float) {
+        private fun realizeShiftedSurface(horizontal: Float, vertical: Float) {
             val shiftedFrame = frame.withShift(horizontal, vertical)
             val shiftedJester = object : Jester {
                 override fun getContact(spot: Spot): Jester.Contact? {
@@ -111,7 +103,7 @@ class ShiftPole(original: Pole) : Pole(original), ShiftDevice<Pole> {
                     }
                 }
             }
-            shifted = addSurface(shiftedFrame, shiftedJester)
+            shiftedSurface = addSurface(shiftedFrame, shiftedJester)
         }
     };
 }

@@ -14,6 +14,7 @@ import com.rubyhuntersky.gx.presentations.Presentation;
 import com.rubyhuntersky.gx.presentations.ResizePresentation;
 import com.rubyhuntersky.gx.uis.OnPresent;
 import com.rubyhuntersky.gx.uis.core.Ui0;
+import com.rubyhuntersky.gx.uis.divs.Div;
 import com.rubyhuntersky.gx.uis.divs.Div0;
 import com.rubyhuntersky.gx.uis.tiles.Tile0;
 
@@ -29,27 +30,38 @@ abstract public class Span0 implements Ui0<Bar> {
 
     public Div0 toColumn(final Sizelet heightlet) {
         final Span0 span0 = this;
-        return Div0.create(new OnPresent<Pole>() {
+        return Div0.create(new Div.OnPresent() {
             @Override
-            public void onPresent(Presenter<Pole> presenter) {
+            public void onPresent(@NonNull Div.Presenter presenter) {
                 presenter.addPresentation(
-                      presentBarToColumn(span0, heightlet, presenter.getHuman(), presenter.getDevice(), presenter));
+                      presentBarToColumn(span0, heightlet, presenter.getHuman(), presenter.getPole(), presenter));
             }
         });
     }
 
     @NonNull
-    private Presentation presentBarToColumn(Span0 span0, Sizelet heightlet, Human human, Pole pole,
-          Observer observer) {
+    private Div.Presentation presentBarToColumn(Span0 span0, Sizelet heightlet, Human human, Pole pole,
+          final Div.Observer observer) {
         final float height = heightlet.toFloat(human, pole.getRelatedHeight());
-        final Bar bar = new Bar(height, pole.getFixedWidth(), pole.getElevation(), pole);
+        final Bar bar = new Bar(height, pole.getWidth(), pole.getElevation(), pole);
         final ShiftBar shiftBar = bar.withShift();
         final Presentation presentation = span0.present(human, shiftBar, observer);
         final float presentationWidth = presentation.getWidth();
         final float extraWidth = pole.getFixedWidth() - presentationWidth;
         final float anchor = .5f;
         shiftBar.doShift(extraWidth * anchor, 0);
-        return new ResizePresentation(pole.getFixedWidth(), bar.fixedHeight, presentation);
+        return new Div.BooleanPresentation() {
+
+            @Override
+            protected void onPresent() {
+                observer.onHeight(height);
+            }
+
+            @Override
+            public void onCancel() {
+                presentation.cancel();
+            }
+        };
     }
 
     public Span0 expandStart(final Tile0 startUi) {

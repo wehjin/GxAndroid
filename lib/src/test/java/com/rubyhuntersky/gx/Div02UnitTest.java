@@ -12,7 +12,7 @@ import com.rubyhuntersky.gx.devices.poles.Pole;
 import com.rubyhuntersky.gx.devices.poles.SeedPole;
 import com.rubyhuntersky.gx.internal.patches.Patch;
 import com.rubyhuntersky.gx.internal.shapes.Shape;
-import com.rubyhuntersky.gx.observers.Observer;
+import com.rubyhuntersky.gx.uis.divs.Div;
 import com.rubyhuntersky.gx.uis.divs.Div0;
 import com.rubyhuntersky.gx.uis.divs.Div1;
 import com.rubyhuntersky.gx.uis.divs.Div2;
@@ -51,7 +51,7 @@ public class Div02UnitTest {
         final Div1<Integer> ui1 = stringIntegerDiv2.bind(condition);
         assertEquals("condition", condition, boundConditions.get(0));
         assertEquals("no frame before presentation", 0, frames.size());
-        ui1.bind(3).present(human, pole, Observer.EMPTY);
+        ui1.bind(3).present(human, pole, Div.EmptyObserver.INSTANCE);
         assertEquals("has frame after presentation", 1, frames.size());
     }
 

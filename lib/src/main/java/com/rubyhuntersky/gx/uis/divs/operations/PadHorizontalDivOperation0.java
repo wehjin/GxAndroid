@@ -1,10 +1,11 @@
 package com.rubyhuntersky.gx.uis.divs.operations;
 
+import android.support.annotation.NonNull;
+
 import com.rubyhuntersky.gx.Human;
 import com.rubyhuntersky.gx.basics.Sizelet;
 import com.rubyhuntersky.gx.devices.poles.Pole;
-import com.rubyhuntersky.gx.internal.presenters.Presenter;
-import com.rubyhuntersky.gx.uis.OnPresent;
+import com.rubyhuntersky.gx.uis.divs.Div;
 import com.rubyhuntersky.gx.uis.divs.Div0;
 
 /**
@@ -20,15 +21,16 @@ public class PadHorizontalDivOperation0 extends DivOperation0 {
     }
 
     @Override
-    public Div0 apply(final Div0 base) {
-        return Div0.create(new OnPresent<Pole>() {
+    public Div0 apply(final Div0 div) {
+        return Div0.create(new Div.OnPresent() {
             @Override
-            public void onPresent(Presenter<Pole> presenter) {
-                Human human = presenter.getHuman();
-                Pole pole = presenter.getDevice();
+            public void onPresent(@NonNull Div.Presenter presenter) {
+                final Human human = presenter.getHuman();
+                final Pole pole = presenter.getPole();
                 final float padding = padlet.toFloat(human, pole.getFixedWidth());
-                Pole newPole = pole.withFixedWidth(pole.getFixedWidth() - 2 * padding).withShift(padding, 0);
-                presenter.addPresentation(base.present(human, newPole, presenter));
+                final float newWidth = pole.getFixedWidth() - 2 * padding;
+                final Pole newPole = pole.withFixedWidth(newWidth).withShift(padding, 0);
+                presenter.addPresentation(div.present(human, newPole, presenter));
             }
         });
     }

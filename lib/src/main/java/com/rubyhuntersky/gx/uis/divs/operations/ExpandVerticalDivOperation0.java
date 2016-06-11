@@ -1,12 +1,11 @@
 package com.rubyhuntersky.gx.uis.divs.operations;
 
+import android.support.annotation.NonNull;
+
 import com.rubyhuntersky.gx.Human;
 import com.rubyhuntersky.gx.basics.Sizelet;
 import com.rubyhuntersky.gx.devices.poles.Pole;
-import com.rubyhuntersky.gx.internal.presenters.Presenter;
-import com.rubyhuntersky.gx.presentations.Presentation;
-import com.rubyhuntersky.gx.presentations.ResizePresentation;
-import com.rubyhuntersky.gx.uis.OnPresent;
+import com.rubyhuntersky.gx.uis.divs.Div;
 import com.rubyhuntersky.gx.uis.divs.Div0;
 
 /**
@@ -24,17 +23,19 @@ public class ExpandVerticalDivOperation0 extends DivOperation0 {
 
     @Override
     public Div0 apply(final Div0 base) {
-        return Div0.create(new OnPresent<Pole>() {
+        return Div0.create(new Div.OnPresent() {
             @Override
-            public void onPresent(Presenter<Pole> presenter) {
+            public void onPresent(@NonNull Div.Presenter presenter) {
                 final Human human = presenter.getHuman();
-                final Pole pole = presenter.getDevice();
+                final Pole pole = presenter.getPole();
                 final float expansion = heightlet.toFloat(human, pole.getRelatedHeight());
                 final Pole shiftPole = pole.withShift(0, expansion);
-                final Presentation present = base.present(human, shiftPole, presenter);
-                final float expanded = present.getHeight() + 2 * expansion;
-                final Presentation resize = new ResizePresentation(pole.getFixedWidth(), expanded, present);
-                presenter.addPresentation(resize);
+                presenter.addPresentation(base.present(human, shiftPole, new Div.ForwardingObserver(presenter) {
+                    @Override
+                    public void onHeight(float height) {
+                        super.onHeight(height + 2 * expansion);
+                    }
+                }));
             }
         });
     }

@@ -2,17 +2,13 @@ package com.rubyhuntersky.gx.uis.divs;
 
 import android.support.annotation.NonNull;
 
-import com.rubyhuntersky.gx.observers.Observer;
-import com.rubyhuntersky.gx.reactions.Reaction;
+import com.rubyhuntersky.gx.Gx;
 import com.rubyhuntersky.gx.basics.Sizelet;
-import com.rubyhuntersky.gx.devices.poles.Pole;
+import com.rubyhuntersky.gx.reactions.Reaction;
 import com.rubyhuntersky.gx.uis.divs.operations.ExpandDownDivOperation1;
 import com.rubyhuntersky.gx.uis.divs.operations.ExpandVerticalDivOperation0;
 import com.rubyhuntersky.gx.uis.divs.operations.PadHorizontalDivOperation0;
 import com.rubyhuntersky.gx.uis.divs.operations.PlaceBeforeDivOperation0;
-import com.rubyhuntersky.gx.uis.OnPresent;
-import com.rubyhuntersky.gx.internal.presenters.Presenter;
-import com.rubyhuntersky.gx.internal.presenters.SwitchPresenter;
 
 /**
  * @author wehjin
@@ -65,45 +61,13 @@ public abstract class Div2<C1, C2> {
     }
 
     public Div0 printReadEval(final Repl<C1, C2> repl) {
-        final Div2<C1, C2> div2 = this;
-        return Div0.create(new OnPresent<Pole>() {
-
-            @Override
-            public void onPresent(final Presenter<Pole> presenter) {
-                final SwitchPresenter<Pole> switchPresenter = new SwitchPresenter<>(presenter.getHuman(),
-                                                                                      presenter.getDevice(),
-                                                                                      presenter);
-                presenter.addPresentation(switchPresenter);
-                present(repl, switchPresenter);
-            }
-
-            void present(final Repl<C1, C2> repl, final SwitchPresenter<Pole> presenter) {
-                if (presenter.isCancelled())
-                    return;
-                final Div0 print = repl.print(div2);
-                presenter.addPresentation(print.present(presenter.getHuman(), presenter.getDevice(), new Observer() {
-                    @Override
-                    public void onReaction(@NonNull Reaction reaction) {
-                        if (presenter.isCancelled())
-                            return;
-                        repl.read(reaction);
-                        if (repl.eval()) {
-                            present(repl, presenter);
-                        }
-                    }
-
-                    @Override
-                    public void onError(@NonNull Throwable throwable) {
-                        presenter.onError(throwable);
-                    }
-                }));
-            }
-        });
+        return Gx.INSTANCE.printReadEvaluate(repl, this);
     }
 
-    public interface Repl<C1, C2> {
-        Div0 print(Div2<C1, C2> unbound);
-        void read(Reaction reaction);
+    public interface Repl<C1, C2> extends Div.PrintReadEvaluater<Div2<C1, C2>> {
+        @NonNull
+        Div0 print(@NonNull Div2<C1, C2> unbound);
+        void read(@NonNull Reaction reaction);
         boolean eval();
     }
 
