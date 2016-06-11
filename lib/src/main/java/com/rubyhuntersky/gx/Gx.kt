@@ -5,8 +5,10 @@ import android.view.Gravity
 import android.view.View
 import android.widget.TextView
 import com.rubyhuntersky.coloret.Coloret
+import com.rubyhuntersky.coloret.Coloret.WHITE
 import com.rubyhuntersky.gx.basics.Frame
 import com.rubyhuntersky.gx.basics.Sizelet
+import com.rubyhuntersky.gx.basics.Sizelet.*
 import com.rubyhuntersky.gx.basics.TextStylet
 import com.rubyhuntersky.gx.internal.patches.Patch
 import com.rubyhuntersky.gx.internal.presenters.SwitchDivPresenter
@@ -160,7 +162,7 @@ object Gx {
                     }
 
                     fun presentLauncher(index: Int) {
-                        val item = items[index].padVertical(Sizelet.QUARTER_FINGER)
+                        val item = items[index].padVertical(QUARTER_FINGER)
                         val launcher = item.placeBefore(moreIndicator, 1, .5f).enableTap("launcher")
                         launcherPresentation?.cancel()
                         launcherPresentation = launcher.present(human, pole, object : Div.ForwardingObserver(presenter) {
@@ -172,25 +174,21 @@ object Gx {
                         })
                     }
 
+                    private val divider = colorColumn(Sizelet(.0625f, Ruler.FINGERTIP), Coloret({ 0x10000000.toInt() }))
+
                     fun presentMenu(launchIndex: Int) {
                         var menu: Div0? = null
-                        var index = 0
-                        for (item: Div0 in items) {
-                            val paddedItem = item.padVertical(Sizelet.THIRD_FINGER).enableTap(index)
-                                    .enableTap(index)
-                            menu = menu
-                                    ?.expandDown(colorColumn(Sizelet.readables(.2f), com.rubyhuntersky.coloret.Coloret.MAGENTA))
-                                    ?.expandDown(paddedItem)
-                                    ?: paddedItem
-                            index++
+                        items.forEachIndexed { index, item ->
+                            val paddedItem = item.padVertical(THIRD_FINGER).enableTap(index)
+                            menu = menu?.expandDown(divider)?.expandDown(paddedItem) ?: paddedItem
                         }
                         menu = menu
                                 ?.padVertical(Sizelet.READABLE)
-                                ?.placeBefore(colorColumn(Sizelet.PREVIOUS, com.rubyhuntersky.coloret.Coloret.WHITE), 1)
+                                ?.placeBefore(colorColumn(Sizelet.PREVIOUS, WHITE), 1)
                                 ?: return
 
                         menuPresentation?.cancel()
-                        menuPresentation = pole.present(menu, object : Div.ForwardingObserver(presenter) {
+                        menuPresentation = pole.present(menu!!, object : Div.ForwardingObserver(presenter) {
                             override fun onHeight(height: Float) {
                                 // Do nothing.  Menu height is not the dropdown height.
                             }
