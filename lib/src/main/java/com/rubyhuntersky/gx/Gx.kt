@@ -191,6 +191,10 @@ object Gx {
 
                         menuPresentation?.cancel()
                         menuPresentation = pole.present(menu, object : Div.ForwardingObserver(presenter) {
+                            override fun onHeight(height: Float) {
+                                // Do nothing.  Menu height is not the dropdown height.
+                            }
+
                             override fun onReaction(reaction: Reaction) {
                                 if (reaction is TapReaction<*>) {
                                     menuPresentation?.cancel()
