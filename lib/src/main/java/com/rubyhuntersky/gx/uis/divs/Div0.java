@@ -207,13 +207,16 @@ public abstract class Div0 implements Div {
 
     private static class TapContact<T> implements Jester.Contact {
         private final Spot downSpot;
-        private final Presenter presenter;
+        private final Observer observer;
         private final T label;
+        private final int maxMoveSquared;
 
         public TapContact(Spot downSpot, Presenter presenter, T label) {
             this.downSpot = downSpot;
-            this.presenter = presenter;
+            this.observer = presenter;
             this.label = label;
+            final int maxMove = (int) (presenter.getHuman().fingerPixels / 4);
+            this.maxMoveSquared = maxMove * maxMove;
         }
 
         @Override
@@ -229,10 +232,6 @@ public abstract class Div0 implements Div {
             } else {
                 return MoveReaction.CONTINUE;
             }
-        }
-
-        private boolean isOutOfBounds(@NotNull Spot spot) {
-            return spot.distanceSquared(downSpot) > 100;
         }
 
         @NotNull
@@ -255,9 +254,11 @@ public abstract class Div0 implements Div {
         public void doUp(@NotNull Spot spot) {
             long time = System.currentTimeMillis();
             Log.d(TAG, "doUp " + time);
-            presenter.onReaction(new TapReaction<>(label,
-                                                   "enableTap",
-                                                   time));
+            observer.onReaction(new TapReaction<>(label, "enableTap", time));
+        }
+
+        private boolean isOutOfBounds(@NotNull Spot spot) {
+            return spot.distanceSquared(downSpot) > maxMoveSquared;
         }
     }
 }

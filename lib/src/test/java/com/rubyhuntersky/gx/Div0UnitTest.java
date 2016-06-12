@@ -80,6 +80,12 @@ public class Div0UnitTest {
     }
 
     @Test
+    public void testEmptyDiv_deliversZeroHeight() throws Exception {
+        presentation = Div0.EMPTY.present(human, pole, recordingObserver);
+        assertEquals(0, recordingObserver.lastHeight, .0001);
+    }
+
+    @Test
     public void expandVertical_increasesHeight() throws Exception {
         final Div0 verticalExpansion = Gx.INSTANCE.colorColumn(pixels(17), Coloret.BLACK).expandVertical(pixels(5));
         presentation = verticalExpansion.present(human, pole, recordingObserver);
@@ -140,7 +146,7 @@ public class Div0UnitTest {
     }
 
     static class RecordingObserver implements Div.Observer {
-        public float lastHeight;
+        public float lastHeight = -1;
         public Reaction lastReaction;
         public Throwable lastError;
 
