@@ -65,9 +65,16 @@ class FrameLayoutScreen(val frameLayout: FrameLayout, val human: Human) : Screen
                     }
 
                     fun onWidth(width: Int) {
-                        val pole = Pole(width.toFloat(), 0f, 0, screen)
+                        val pole = Pole(width.toFloat(), 0f, 0, screen).withShift();
                         subPresentation?.cancel()
-                        subPresentation = div.present(human, pole, observer)
+                        subPresentation = div.padHorizontal(Sizelet.DOUBLE_READABLE)
+                                .present(human, pole, object : Div.ForwardingObserver(observer) {
+                                    override fun onHeight(height: Float) {
+                                        val extraHeight = subFrame!!.height - height
+                                        pole.doShift(0f, extraHeight / 3)
+                                        super.onHeight(height)
+                                    }
+                                })
                     }
                 }
 
