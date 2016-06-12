@@ -1,4 +1,4 @@
-package com.rubyhuntersky.tour
+package com.rubyhuntersky.gx.android
 
 import android.support.v4.view.MotionEventCompat.getX
 import android.support.v4.view.MotionEventCompat.getY
@@ -12,8 +12,6 @@ import android.widget.FrameLayout.LayoutParams.MATCH_PARENT
 import android.widget.TextView
 import com.rubyhuntersky.gx.Human
 import com.rubyhuntersky.gx.R
-import com.rubyhuntersky.gx.android.ShapeRuler
-import com.rubyhuntersky.gx.android.TextRuler
 import com.rubyhuntersky.gx.basics.*
 import com.rubyhuntersky.gx.devices.poles.Pole
 import com.rubyhuntersky.gx.internal.patches.Patch
@@ -100,32 +98,32 @@ class FrameLayoutScreen(val frameLayout: FrameLayout, val human: Human) : Screen
     }
 
     override fun measureText(text: String, textStyle: TextStyle): TextSize {
-        Log.d(MainActivity.tag, "measureText $text $textStyle")
+        Log.d(tag, "measureText $text $textStyle")
         return textRuler.measure(text, textStyle)
     }
 
     override fun measureShape(shape: Shape): ShapeSize {
-        Log.d(MainActivity.tag, "measureShape $shape")
+        Log.d(tag, "measureShape $shape")
         return shapeRuler.measure(shape)
     }
 
-    class PatchController(val frameLayout: FrameLayout) {
+    inner class PatchController(val frameLayout: FrameLayout) {
 
         val context = frameLayout.context
         val resources = context.resources
         val elevationPixels = resources.getDimensionPixelSize(R.dimen.elevationGap)
 
         fun addPatch(frame: Frame, shape: Shape, argbColor: Int): Patch {
-            Log.d(MainActivity.tag, "addPatch $frame $shape $argbColor")
+            Log.d(tag, "addPatch $frame $shape $argbColor")
             when (shape) {
                 is RectangleShape -> {
-                    Log.d(MainActivity.tag, "RectangleShape")
+                    Log.d(tag, "RectangleShape")
                     val view = View(context)
                     view.setBackgroundColor(argbColor)
                     return addPatch(view, frame, 0f)
                 }
                 is TextShape -> {
-                    Log.d(MainActivity.tag, "TextShape")
+                    Log.d(tag, "TextShape")
                     val textView = TextView(context)
                     textView.gravity = Gravity.TOP
                     textView.setTextColor(shape.textStyle.typecolor)
@@ -142,7 +140,7 @@ class FrameLayoutScreen(val frameLayout: FrameLayout, val human: Human) : Screen
                     return addPatch(view, frame, 0f)
                 }
                 else -> {
-                    Log.d(MainActivity.tag, "OtherShape")
+                    Log.d(tag, "OtherShape")
                     return com.rubyhuntersky.gx.internal.patches.Patch.EMPTY
                 }
             }
@@ -167,6 +165,9 @@ class FrameLayoutScreen(val frameLayout: FrameLayout, val human: Human) : Screen
     }
 
     class TouchController {
+        companion object {
+            val tag = TouchController::class.java.simpleName
+        }
 
         private data class JesterItem(val frame: Frame, val jester: Jester)
 
@@ -193,25 +194,25 @@ class FrameLayoutScreen(val frameLayout: FrameLayout, val human: Human) : Screen
         }
 
         fun addSurface(frame: Frame, jester: Jester): Removable {
-            Log.d(MainActivity.tag, "addSurface $frame, $jester")
+            Log.d(tag, "addSurface $frame, $jester")
             val jesterItem = JesterItem(frame, jester)
             jesterItems.add(jesterItem)
             return object : Removable {
                 override fun remove() {
-                    Log.d(MainActivity.tag, "removeSurface $jesterItem")
+                    Log.d(tag, "removeSurface $jesterItem")
                     jesterItems.remove(jesterItem)
                 }
             }
         }
 
         private fun onTouchDown(spot: Spot) {
-            Log.v(MainActivity.tag, "Action Down $this")
+            Log.v(tag, "Action Down $this")
             contacts.cancelAndClear()
             for ((frame, jester) in jesterItems) {
-                Log.v(MainActivity.tag, "Spot $spot, Frame $frame")
+                Log.v(tag, "Spot $spot, Frame $frame")
                 if (spot.intersects(frame)) {
                     val contact = jester.getContact(spot)
-                    Log.v(MainActivity.tag, "Contact $contact")
+                    Log.v(tag, "Contact $contact")
                     if (contact != null) {
                         contacts.add(contact)
                     }
@@ -220,12 +221,12 @@ class FrameLayoutScreen(val frameLayout: FrameLayout, val human: Human) : Screen
         }
 
         private fun onTouchCancel() {
-            Log.v(MainActivity.tag, "Action Cancel")
+            Log.v(tag, "Action Cancel")
             contacts.cancelAndClear()
         }
 
         private fun onTouchMove(spot: Spot) {
-            Log.v(MainActivity.tag, "Action Move")
+            Log.v(tag, "Action Move")
             val moveContacts = HashSet<Jester.Contact>()
             val cancelContacts = HashSet<Jester.Contact>()
             for (contact in contacts) {
@@ -244,7 +245,7 @@ class FrameLayoutScreen(val frameLayout: FrameLayout, val human: Human) : Screen
         }
 
         private fun onTouchUp(spot: Spot) {
-            Log.v(MainActivity.tag, "Action Up $this")
+            Log.v(tag, "Action Up $this")
             val upContacts = HashSet<Jester.Contact>()
             val cancelContacts = HashSet<Jester.Contact>()
             for (contact in contacts) {

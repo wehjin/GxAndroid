@@ -12,6 +12,7 @@ import com.rubyhuntersky.gx.Gx.colorColumn
 import com.rubyhuntersky.gx.Gx.dropDownMenuDiv
 import com.rubyhuntersky.gx.Gx.textColumn
 import com.rubyhuntersky.gx.android.AndroidHuman
+import com.rubyhuntersky.gx.android.FrameLayoutScreen
 import com.rubyhuntersky.gx.basics.Sizelet
 import com.rubyhuntersky.gx.basics.Sizelet.FINGER
 import com.rubyhuntersky.gx.basics.Sizelet.READABLE
