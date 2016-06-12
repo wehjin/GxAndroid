@@ -32,6 +32,13 @@ import org.jetbrains.annotations.Nullable;
 public abstract class Div0 implements Div {
 
     static final String TAG = Div0.class.getSimpleName();
+    public static final Div0 EMPTY = new Div0() {
+        @NonNull
+        @Override
+        public Presentation present(@NonNull Human human, @NonNull Pole pole, @NonNull Observer observer) {
+            return Presentation.EMPTY.INSTANCE;
+        }
+    };
 
     @NonNull
     public abstract Div.Presentation present(@NonNull Human human, @NonNull Pole pole, @NonNull Div.Observer observer);

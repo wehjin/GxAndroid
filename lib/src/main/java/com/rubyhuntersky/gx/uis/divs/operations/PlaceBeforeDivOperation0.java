@@ -40,8 +40,8 @@ public class PlaceBeforeDivOperation0 extends DivOperation0 {
                 presenter.addPresentation(new Div.PresenterPresentation(presenter) {
 
                     private ShiftPole nearPole;
-                    private Div.Presentation farPresentation = Div.CancelledPresentation.INSTANCE;
-                    private Div.Presentation nearPresentation = Div.CancelledPresentation.INSTANCE;
+                    private Div.Presentation farPresentation = Div.Presentation.EMPTY.INSTANCE;
+                    private Div.Presentation nearPresentation = Div.Presentation.EMPTY.INSTANCE;
 
                     {
                         final Human human = getHuman();

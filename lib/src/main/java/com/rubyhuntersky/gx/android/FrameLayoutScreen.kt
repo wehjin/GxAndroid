@@ -194,19 +194,21 @@ class FrameLayoutScreen(val frameLayout: FrameLayout, val human: Human) : Screen
         }
 
         fun addSurface(frame: Frame, jester: Jester): Removable {
-            Log.d(tag, "addSurface $frame, $jester")
+            Log.v(tag, "addSurface $frame, $jester $this")
             val jesterItem = JesterItem(frame, jester)
             jesterItems.add(jesterItem)
+            Log.v(tag, "addSurface done remaining $jesterItems $this")
             return object : Removable {
                 override fun remove() {
-                    Log.d(tag, "removeSurface $jesterItem")
+                    Log.v(tag, "removeSurface $jesterItem ${this@TouchController}")
                     jesterItems.remove(jesterItem)
+                    Log.v(tag, "removeSurface remaining $jesterItems ${this@TouchController}")
                 }
             }
         }
 
         private fun onTouchDown(spot: Spot) {
-            Log.v(tag, "Action Down $this")
+            Log.d(tag, "Action Down $jesterItems $this")
             contacts.cancelAndClear()
             for ((frame, jester) in jesterItems) {
                 Log.v(tag, "Spot $spot, Frame $frame")
@@ -221,7 +223,7 @@ class FrameLayoutScreen(val frameLayout: FrameLayout, val human: Human) : Screen
         }
 
         private fun onTouchCancel() {
-            Log.v(tag, "Action Cancel")
+            Log.d(tag, "Action Cancel $jesterItems")
             contacts.cancelAndClear()
         }
 
@@ -245,7 +247,7 @@ class FrameLayoutScreen(val frameLayout: FrameLayout, val human: Human) : Screen
         }
 
         private fun onTouchUp(spot: Spot) {
-            Log.v(tag, "Action Up $this")
+            Log.d(tag, "Action Up $jesterItems")
             val upContacts = HashSet<Jester.Contact>()
             val cancelContacts = HashSet<Jester.Contact>()
             for (contact in contacts) {
@@ -260,6 +262,7 @@ class FrameLayoutScreen(val frameLayout: FrameLayout, val human: Human) : Screen
             for (contact in upContacts) {
                 contact.doUp(spot)
             }
+            Log.d(tag, "Action Up done $jesterItems $this")
         }
 
         private fun HashSet<Jester.Contact>.cancelAndClear() {

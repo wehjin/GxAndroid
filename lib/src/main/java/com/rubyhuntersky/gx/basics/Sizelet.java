@@ -8,15 +8,19 @@ import com.rubyhuntersky.gx.Human;
  */
 
 public class Sizelet {
+    private static final float SCALE_IMPORTANT = 1.4f;
     public static final Sizelet FINGER = new Sizelet(1, Ruler.FINGERTIP);
     public static final Sizelet TWO_THIRDS_FINGER = new Sizelet(.6666f, Ruler.FINGERTIP);
     public static final Sizelet HALF_FINGER = new Sizelet(.5f, Ruler.FINGERTIP);
     public static final Sizelet THIRD_FINGER = new Sizelet(.3333f, Ruler.FINGERTIP);
     public static final Sizelet QUARTER_FINGER = new Sizelet(.25f, Ruler.FINGERTIP);
+    public static final Sizelet QUARTER_READABLE = new Sizelet(.25f, Ruler.READABLE);
     public static final Sizelet READABLE = new Sizelet(1f, Ruler.READABLE);
     public static final Sizelet DOUBLE_READABLE = new Sizelet(2f, Ruler.READABLE);
     public static final Sizelet TITLE = new Sizelet(1.8f, Ruler.READABLE);
-    public static final Sizelet IMPORTANT = new Sizelet(1.4f, Ruler.READABLE);
+    public static final Sizelet IMPORTANT = new Sizelet(SCALE_IMPORTANT, Ruler.READABLE);
+    public static final Sizelet DOUBLE_IMPORTANT = new Sizelet(SCALE_IMPORTANT * 2, Ruler.READABLE);
+    public static final Sizelet TRIPLE_IMPORTANT = new Sizelet(SCALE_IMPORTANT * 3, Ruler.READABLE);
     public static final Sizelet PREVIOUS = new Sizelet(1, Ruler.PREVIOUS);
 
     public static Sizelet ZERO = new Sizelet(0, Ruler.ZERO);

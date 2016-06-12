@@ -70,7 +70,7 @@ public class Div0UnitTest {
             }
         };
         padTopUi = Gx.INSTANCE.colorColumn(pixels(10), Coloret.BLACK).padTop(pixels(15));
-        presentation = Div.CancelledPresentation.INSTANCE;
+        presentation = Div.Presentation.EMPTY.INSTANCE;
         recordingObserver = new RecordingObserver();
     }
 

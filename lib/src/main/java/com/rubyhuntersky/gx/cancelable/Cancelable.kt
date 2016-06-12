@@ -22,8 +22,13 @@ abstract class BooleanCancelable() : Cancelable {
         if (!cancelled) {
             cancelled = true
             onCancel()
+        } else {
+            onAlreadyCancelled()
         }
     }
 
     abstract fun onCancel()
+    open fun onAlreadyCancelled() {
+        // Do nothing
+    }
 }

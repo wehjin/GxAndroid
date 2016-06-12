@@ -1,6 +1,7 @@
 package com.rubyhuntersky.gx
 
 import android.content.Context
+import android.util.Log
 import android.view.Gravity
 import android.view.View
 import android.widget.TextView
@@ -15,6 +16,7 @@ import com.rubyhuntersky.gx.internal.presenters.SwitchDivPresenter
 import com.rubyhuntersky.gx.internal.shapes.RectangleShape
 import com.rubyhuntersky.gx.internal.shapes.ViewShape
 import com.rubyhuntersky.gx.presentations.PatchPresentation
+import com.rubyhuntersky.gx.reactions.ItemSelectionReaction
 import com.rubyhuntersky.gx.reactions.Reaction
 import com.rubyhuntersky.gx.reactions.TapReaction
 import com.rubyhuntersky.gx.uis.divs.Div
@@ -138,45 +140,56 @@ object Gx {
 
     val moreIndicator: Div0 by lazy {
         val moreMarker = textTile("▼", TextStylet.IMPORTANT_DARK)
-        val moreMarkerInset = .01f
+        val moreMarkerInset = .05f
         val leftMarker = moreMarker.toColumn(moreMarkerInset)
         val rightMarker = moreMarker.toColumn(1f - moreMarkerInset)
         val moreIndicator = leftMarker.placeBefore(rightMarker, 0)
         moreIndicator
     }
 
-    fun dropDownMenuDiv(startIndex: Int, items: List<Div0>): Div0 {
+    fun dropDownMenuDiv(startIndex: Int, items: List<Div0>, name: String = "dropDownMenuDiv"): Div0 {
         return Div0.create(object : Div.OnPresent {
             override fun onPresent(presenter: Div.Presenter) {
-                object : Div.PresenterPresentation(presenter) {
+                presenter.addPresentation(object : Div.PresenterPresentation(presenter) {
+                    val divider = colorColumn(Sizelet(.0625f, Ruler.FINGERTIP), Coloret({ 0x10000000.toInt() }))
+                    var index = startIndex
                     var launcherPresentation: Div.Presentation? = null
                     var menuPresentation: Div.Presentation? = null
 
                     init {
-                        presentLauncher(startIndex)
+                        Log.d(name, "init")
+                        presentLauncher()
                     }
 
                     override fun onCancel() {
+                        Log.d(name, "onCancel")
                         menuPresentation?.cancel()
                         launcherPresentation?.cancel()
                     }
 
-                    fun presentLauncher(index: Int) {
+                    override fun onAlreadyCancelled() {
+                        Log.d(name, "onAlreadyCancelled")
+                    }
+
+                    fun presentLauncher() {
+                        Log.d(name, "presentLauncher")
                         val item = items[index].padVertical(QUARTER_FINGER)
                         val launcher = item.placeBefore(moreIndicator, 1, .5f).enableTap("launcher")
+                        menuPresentation?.cancel()
                         launcherPresentation?.cancel()
                         launcherPresentation = launcher.present(human, pole, object : Div.ForwardingObserver(presenter) {
                             override fun onReaction(reaction: Reaction) {
                                 if (reaction is TapReaction<*>) {
-                                    presentMenu(index)
+                                    Log.d(name, "Launcher TapReaction $reaction")
+                                    presentMenu()
                                 }
                             }
                         })
+                        Log.d(name, "presentLauncher done")
                     }
 
-                    private val divider = colorColumn(Sizelet(.0625f, Ruler.FINGERTIP), Coloret({ 0x10000000.toInt() }))
-
-                    fun presentMenu(launchIndex: Int) {
+                    fun presentMenu() {
+                        Log.d(name, "presentMenu")
                         var menu: Div0? = null
                         items.forEachIndexed { index, item ->
                             val paddedItem = item.padVertical(THIRD_FINGER).enableTap(index)
@@ -195,13 +208,16 @@ object Gx {
 
                             override fun onReaction(reaction: Reaction) {
                                 if (reaction is TapReaction<*>) {
+                                    Log.d(name, "Menu TapReaction $reaction")
                                     menuPresentation?.cancel()
-                                    presentLauncher(reaction.tag as Int)
+                                    index = reaction.tag as Int
+                                    presentLauncher()
+                                    presenter.onReaction(ItemSelectionReaction(name, index))
                                 }
                             }
                         })
                     }
-                }
+                })
             }
         })
     }

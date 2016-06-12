@@ -30,7 +30,7 @@ public class SwitchDivPresenter implements Div.Presenter {
         this.human = human;
         this.device = device;
         this.observer = observer;
-        presentation = Div.CancelledPresentation.INSTANCE;
+        presentation = Div.Presentation.EMPTY.INSTANCE;
     }
 
     @Override

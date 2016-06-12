@@ -19,7 +19,14 @@ interface Div {
         fun onHeight(height: Float)
     }
 
-    interface Presentation : Cancelable
+    interface Presentation : Cancelable {
+        object EMPTY : Presentation, Cancelable {
+            override val isCancelled: Boolean = true
+            override fun cancel() {
+                // Do nothing
+            }
+        }
+    }
 
     interface Presenter : Observer, Presentation {
         val human: Human
@@ -62,13 +69,6 @@ interface Div {
 
         override fun onError(throwable: Throwable) {
             observer.onError(throwable)
-        }
-    }
-
-    object CancelledPresentation : Presentation, Cancelable {
-        override val isCancelled: Boolean = true
-        override fun cancel() {
-            // Do nothing
         }
     }
 
