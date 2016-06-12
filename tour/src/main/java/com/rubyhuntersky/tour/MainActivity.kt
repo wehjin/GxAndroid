@@ -52,47 +52,76 @@ open class MainActivity : AppCompatActivity() {
     fun onWidth(frameLayout: FrameLayout, left: Int, right: Int) {
         Log.d(tag, "onWidth left $left right $right")
         val pole = Pole((right - left).toFloat(), 0f, 0, FrameLayoutScreen(frameLayout, human))
-        val menuItem1 = textColumn("Account 1234", IMPORTANT_DARK)
-                .padBottom(READABLE)
-                .expandDown(textColumn("Buy 20 shares", READABLE_DARK))
-                .padBottom(READABLE)
-                .expandDown(textColumn("and", READABLE_DARK))
-                .padBottom(Sizelet.readables(3f))
-                .expandDown(textColumn("Add funds $3398.29", IMPORTANT_DARK))
-                .padVertical(READABLE)
-        val menuItem2 = textColumn("Account ABCD", IMPORTANT_DARK)
-                .padBottom(READABLE)
-                .expandDown(textColumn("Sufficient funds $8972.33", READABLE_DARK))
-                .padVertical(READABLE)
-
-        val menuItems = listOf(menuItem1, menuItem2)
-        val dropDownMenu: Div0 = dropDownMenuDiv(0, menuItems)
 
         data class Product(val name: String, val price: Float) {
             val nameAndPrice = "$name $price"
         }
 
-        data class Account(val name: String, val cash: Float) {
-            fun getBuyableShares(product: Product): Float {
+        data class Asset(val name: String, val shares: Float, val price: Float) {
+            val value = shares * price
+
+            fun getSharesToSellToCoverShortfall(fundingAmount: Float): Float = if (price == 0f) 0f else (fundingAmount / price)
+        }
+
+        data class Account(val name: String, val cash: Float, val assets: List<Asset>) {
+            fun hasFundsForPurchase(purchaseAmount: Float): Boolean = cash >= purchaseAmount
+            fun getPurchasableShares(product: Product): Float {
                 return cash / product.price
             }
+
+            fun getShortfallForPurchase(purchaseAmount: Float): Float = purchaseAmount - cash
         }
 
         data class Purchase(val amountToSpend: Float,
                             val products: List<Product>, val productIndex: Int,
-                            val accounts: List<Account>, val accountIndex: Int) {
+                            val accounts: List<Account>, val accountIndex: Int,
+                            val salableAssets: List<Asset> = if (accountIndex < accounts.size) {
+                                accounts[accountIndex].assets
+                            } else {
+                                emptyList()
+                            }, val salableAssetIndex: Int = 0) {
             val productToBuy = products[productIndex]
             val sharesToBuy = when (productToBuy.price) {
                 0f -> 0f
                 else -> amountToSpend / productToBuy.price
             }
+            val account: Account? = if (accountIndex < accounts.size) {
+                accounts[accountIndex]
+            } else {
+                null
+            }
+            val isFunded: Boolean = account?.hasFundsForPurchase(amountToSpend) ?: false
+            val canSellToFund: Boolean = salableAssets.size > 0
+            val salableAsset: Asset? = if (salableAssetIndex < salableAssets.size) salableAssets[salableAssetIndex] else null
+            val shortfall: Float = account?.getShortfallForPurchase(amountToSpend) ?: 0f
+            val sharesToSellToCoverShortfall: Float = salableAsset?.getSharesToSellToCoverShortfall(shortfall) ?: 0f
 
-            fun withProductIndex(value: Int) = Purchase(amountToSpend, products, value, accounts, accountIndex)
-            fun withAccountIndex(value: Int) = Purchase(amountToSpend, products, productIndex, accounts, value)
+            fun withProductIndex(value: Int): Purchase {
+                if (value == productIndex) {
+                    return this
+                }
+                return Purchase(amountToSpend, products, value, accounts, accountIndex, salableAssets, salableAssetIndex)
+            }
+
+            fun withAccountIndex(value: Int): Purchase {
+                if (value == accountIndex) {
+                    return this
+                }
+                return Purchase(amountToSpend, products, productIndex, accounts, value)
+            }
+
+            fun withAssetIndex(value: Int): Purchase {
+                if (value == salableAssetIndex) {
+                    return this;
+                }
+                return Purchase(amountToSpend, products, productIndex, accounts, accountIndex, salableAssets, value)
+            }
         }
 
         val products = listOf(Product("VT", 58.44f), Product("Q", 32.36f))
-        val accounts = listOf(Account("IRA", 50f), Account("Non-IRA", 5000f))
+        val iraAccount = Account("IRA", 50f, listOf(Asset("IBM", 30f, 10f), Asset("MSFT", 300f, 20f)))
+        val nonIraAccount = Account("Non-IRA", 5000f, listOf(Asset("GOOG", 9f, 11f)))
+        val accounts = listOf(iraAccount, nonIraAccount)
         val startingPurchase = Purchase(1000f, products, 0, accounts, 0)
         val purchaseDiv = Div0.create(object : Div.OnPresent {
             override fun onPresent(presenter: Div.Presenter) {
@@ -103,6 +132,9 @@ open class MainActivity : AppCompatActivity() {
                     val Product.menuItem: Div0
                         get() = textColumn("\u00f7 $nameAndPrice ", IMPORTANT_DARK).expandVertical(READABLE)
 
+                    val Asset.menuItem: Div0
+                        get() = textColumn("\u00f7 $name \$$price", IMPORTANT_DARK).expandVertical(READABLE)
+
                     fun Account.menuItem(purchaseTarget: Float, product: Product): Div0 {
                         val accountLine = textColumn("Account $name", IMPORTANT_DARK)
                                 .expandDown(gapColumn(Sizelet.READABLE))
@@ -110,7 +142,7 @@ open class MainActivity : AppCompatActivity() {
                             return accountLine.expandDown(textColumn("Sufficient funds \$$cash", READABLE_DARK))
                         } else {
                             return accountLine
-                                    .expandDown(textColumn("Buy ${getBuyableShares(product)} shares", READABLE_DARK))
+                                    .expandDown(textColumn("Buy ${getPurchasableShares(product)} shares", READABLE_DARK))
                                     .expandDown(gapColumn(READABLE))
                                     .expandDown(textColumn("or", READABLE_DARK))
                                     .expandDown(gapColumn(READABLE))
@@ -126,6 +158,14 @@ open class MainActivity : AppCompatActivity() {
                         } else {
                             Div0.EMPTY
                         }
+                    val Purchase.assetMenu: Div0
+                        get() {
+                            return if (!isFunded && salableAssets.size > 0) {
+                                dropDownMenuDiv(salableAssetIndex, salableAssets.map { it.menuItem }, "assetMenu")
+                            } else {
+                                Div0.EMPTY
+                            }
+                        }
 
                     init {
                         present()
@@ -133,13 +173,14 @@ open class MainActivity : AppCompatActivity() {
 
                     val Reaction.isProductChoice: Boolean get() = this is ItemSelectionReaction<*> && source == "productMenu"
                     val Reaction.isAccountChoice: Boolean get() = this is ItemSelectionReaction<*> && source == "accountMenu"
+                    val Reaction.isAssetChoice: Boolean get() = this is ItemSelectionReaction<*> && source == "assetMenu"
                     @Suppress("UNCHECKED_CAST")
                     val Reaction.integerChoice: Int get() = (this as ItemSelectionReaction<Int>).item!!
 
                     private fun present() {
                         Log.d(tag, "present")
                         val amountLine = textColumn("Buy \$${purchase.amountToSpend}", IMPORTANT_DARK)
-                        val divisionDivider = colorColumn(Sizelet.QUARTER_READABLE, BLACK)
+                        val divisionDivider = colorColumn(Sizelet.QUARTER_READABLE, BLACK).padHorizontal(Sizelet.HALF_FINGER)
                         val purchaseUi = amountLine
                                 .expandDown(purchase.productMenu)
                                 .expandVertical(READABLE)
@@ -148,6 +189,15 @@ open class MainActivity : AppCompatActivity() {
                                 .expandDown(textColumn("${purchase.sharesToBuy} shares", IMPORTANT_DARK))
                                 .expandDown(gapColumn(Sizelet.TRIPLE_IMPORTANT))
                                 .expandDown(purchase.accountMenu)
+                                .expandDown(if (purchase.shortfall > 0 && purchase.salableAssets.size > 0) {
+                                    purchase.assetMenu
+                                            .expandDown(divisionDivider)
+                                            .expandDown(gapColumn(READABLE))
+                                            .expandDown(textColumn("Sell ${purchase.sharesToSellToCoverShortfall} shares", IMPORTANT_DARK))
+                                } else {
+                                    Div0.EMPTY
+                                })
+                                .expandVertical(Sizelet.HALF_FINGER)
 
                         presentation.cancel()
                         presentation = purchaseUi.present(presenter.human, presenter.pole, object : Div.ForwardingObserver(presenter) {
@@ -159,6 +209,10 @@ open class MainActivity : AppCompatActivity() {
                                 } else if (reaction.isAccountChoice) {
                                     Log.d(tag, "Account selected $reaction")
                                     purchase = purchase.withAccountIndex(reaction.integerChoice)
+                                    present()
+                                } else if (reaction.isAssetChoice) {
+                                    Log.d(tag, "Asset selected $reaction")
+                                    purchase = purchase.withAssetIndex(reaction.integerChoice)
                                     present()
                                 } else {
                                     super.onReaction(reaction)

@@ -36,6 +36,7 @@ public abstract class Div0 implements Div {
         @NonNull
         @Override
         public Presentation present(@NonNull Human human, @NonNull Pole pole, @NonNull Observer observer) {
+            observer.onHeight(0);
             return Presentation.EMPTY.INSTANCE;
         }
     };
