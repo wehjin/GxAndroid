@@ -44,8 +44,9 @@ public abstract class Div5<C1, C2, C3, C4, C5> {
     }
 
 
-    public interface Repl<C1, C2, C3, C4, C5> extends Div.PrintReadEvaluater<Div5> {
-        Div0 print(Div5<C1, C2, C3, C4, C5> unbound);
+    public interface Repl<C1, C2, C3, C4, C5> extends Div.PrintReadEvaluater<Div5<C1, C2, C3, C4, C5>> {
+        @NonNull
+        Div0 print(@NonNull Div5<C1, C2, C3, C4, C5> unbound);
         void read(@NonNull Reaction reaction);
         boolean eval();
     }

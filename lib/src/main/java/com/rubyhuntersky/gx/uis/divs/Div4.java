@@ -44,7 +44,7 @@ public abstract class Div4<C1, C2, C3, C4> {
     }
 
 
-    public interface Repl<C1, C2, C3, C4> extends Div.PrintReadEvaluater<Div4> {
+    public interface Repl<C1, C2, C3, C4> extends Div.PrintReadEvaluater<Div4<C1, C2, C3, C4>> {
         @NonNull
         Div0 print(@NonNull Div4<C1, C2, C3, C4> unbound);
         void read(@NonNull Reaction reaction);

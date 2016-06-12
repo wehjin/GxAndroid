@@ -53,8 +53,9 @@ public abstract class Div3<C1, C2, C3> {
     }
 
 
-    public interface Repl<C1, C2, C3> extends Div.PrintReadEvaluater<Div3> {
-        Div0 print(Div3<C1, C2, C3> unbound);
+    public interface Repl<C1, C2, C3> extends Div.PrintReadEvaluater<Div3<C1, C2, C3>> {
+        @NonNull
+        Div0 print(@NonNull Div3<C1, C2, C3> unbound);
         void read(@NonNull Reaction reaction);
         boolean eval();
     }
