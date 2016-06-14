@@ -1,7 +1,6 @@
 package com.rubyhuntersky.gx.uis.divs;
 
 import android.support.annotation.NonNull;
-import android.util.Log;
 
 import com.rubyhuntersky.gx.Gx;
 import com.rubyhuntersky.gx.Human;
@@ -12,10 +11,7 @@ import com.rubyhuntersky.gx.basics.Spot;
 import com.rubyhuntersky.gx.devices.poles.Pole;
 import com.rubyhuntersky.gx.devices.poles.ShiftPole;
 import com.rubyhuntersky.gx.internal.surface.Jester;
-import com.rubyhuntersky.gx.internal.surface.MoveReaction;
-import com.rubyhuntersky.gx.internal.surface.UpReaction;
 import com.rubyhuntersky.gx.reactions.Reaction;
-import com.rubyhuntersky.gx.reactions.TapReaction;
 import com.rubyhuntersky.gx.uis.divs.operations.ExpandDownDivOperation1;
 import com.rubyhuntersky.gx.uis.divs.operations.ExpandVerticalDivOperation0;
 import com.rubyhuntersky.gx.uis.divs.operations.PadHorizontalDivOperation0;
@@ -90,7 +86,6 @@ public abstract class Div0 implements Div {
                                                       @Nullable
                                                       @Override
                                                       public Contact getContact(@NotNull final Spot downSpot) {
-
                                                           return new TapContact<>(downSpot, presenter, label);
                                                       }
                                                   });
@@ -205,60 +200,4 @@ public abstract class Div0 implements Div {
         });
     }
 
-    private static class TapContact<T> implements Jester.Contact {
-        private final Spot downSpot;
-        private final Observer observer;
-        private final T label;
-        private final int maxMoveSquared;
-
-        public TapContact(Spot downSpot, Presenter presenter, T label) {
-            this.downSpot = downSpot;
-            this.observer = presenter;
-            this.label = label;
-            final int maxMove = (int) (presenter.getHuman().fingerPixels / 4);
-            this.maxMoveSquared = maxMove * maxMove;
-        }
-
-        @Override
-        public void doCancel() {
-            Log.d(TAG, "doCancel");
-        }
-
-        @NotNull
-        @Override
-        public MoveReaction getMoveReaction(@NotNull Spot spot) {
-            if (isOutOfBounds(spot)) {
-                return MoveReaction.CANCEL;
-            } else {
-                return MoveReaction.CONTINUE;
-            }
-        }
-
-        @NotNull
-        @Override
-        public Jester.Contact doMove(@NotNull Spot spot) {
-            return this;
-        }
-
-        @NotNull
-        @Override
-        public UpReaction getUpReaction(@NotNull Spot spot) {
-            if (isOutOfBounds(spot)) {
-                return UpReaction.CANCEL;
-            } else {
-                return UpReaction.CONFIRM;
-            }
-        }
-
-        @Override
-        public void doUp(@NotNull Spot spot) {
-            long time = System.currentTimeMillis();
-            Log.d(TAG, "doUp " + time);
-            observer.onReaction(new TapReaction<>(label, "enableTap", time));
-        }
-
-        private boolean isOutOfBounds(@NotNull Spot spot) {
-            return spot.distanceSquared(downSpot) > maxMoveSquared;
-        }
-    }
 }

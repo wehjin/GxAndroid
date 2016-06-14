@@ -28,18 +28,31 @@ import com.rubyhuntersky.gx.internal.shapes.ViewShape
 import com.rubyhuntersky.gx.internal.surface.Jester
 import com.rubyhuntersky.gx.internal.surface.MoveReaction
 import com.rubyhuntersky.gx.internal.surface.UpReaction
+import com.rubyhuntersky.gx.reactions.Reaction
 import com.rubyhuntersky.gx.uis.divs.Div
 import com.rubyhuntersky.gx.uis.divs.Div0
+import com.rubyhuntersky.gx.uis.divs.TapContact
 import java.util.*
 
-class FrameLayoutScreen(val frameLayout: FrameLayout, val human: Human, val activity: FragmentActivity) : Screen {
+class FrameLayoutScreen(val frameLayout: FrameLayout, val human: Human, val activity: FragmentActivity, val onClick: (() -> Unit)? = null) : Screen {
 
     val tag = "${FrameLayoutScreen::class.java.simpleName}${this.hashCode()}"
     val context = frameLayout.context
     val textRuler = TextRuler(context)
     val shapeRuler = ShapeRuler(context)
     val patchController = PatchController(frameLayout)
-    val surfaceController = TouchController()
+    val surfaceController = TouchController(human, object : Div.Observer {
+        override fun onHeight(height: Float) {
+        }
+
+        override fun onReaction(reaction: Reaction) {
+            Log.d(tag, "onTap $reaction")
+            onClick?.invoke()
+        }
+
+        override fun onError(throwable: Throwable) {
+        }
+    })
 
     init {
         frameLayout.setOnTouchListener(surfaceController.newTouchListener)
@@ -78,7 +91,9 @@ class FrameLayoutScreen(val frameLayout: FrameLayout, val human: Human, val acti
                         }
                     }
                     container?.addView(view)
-                    pole = Pole(viewWidth.toFloat(), 0f, 100, FrameLayoutScreen(view, human, activity)).withShift(0f, offset)
+                    pole = Pole(viewWidth.toFloat(), 0f, 100, FrameLayoutScreen(view, human, activity, {
+                        dismiss()
+                    })).withShift(0f, offset)
                     return view
                 }
 
@@ -198,7 +213,7 @@ class FrameLayoutScreen(val frameLayout: FrameLayout, val human: Human, val acti
         }
     }
 
-    class TouchController {
+    class TouchController(val human: Human, val observer: Div.Observer) {
         companion object {
             val tag = TouchController::class.java.simpleName
         }
@@ -253,6 +268,9 @@ class FrameLayoutScreen(val frameLayout: FrameLayout, val human: Human, val acti
                         contacts.add(contact)
                     }
                 }
+            }
+            if (contacts.isEmpty()) {
+                contacts.add(TapContact(spot, observer, human, "Background"))
             }
         }
 
