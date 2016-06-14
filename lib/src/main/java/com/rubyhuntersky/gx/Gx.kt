@@ -23,6 +23,7 @@ import com.rubyhuntersky.gx.uis.divs.Div
 import com.rubyhuntersky.gx.uis.divs.Div0
 import com.rubyhuntersky.gx.uis.spans.Span0
 import com.rubyhuntersky.gx.uis.tiles.Tile0
+import java.util.*
 
 /**
  * @author wehjin
@@ -154,7 +155,8 @@ object Gx {
                     val divider = colorColumn(Sizelet(.0625f, Ruler.FINGERTIP), Coloret({ 0x10000000.toInt() }))
                     var index = startIndex
                     var launcherPresentation: Div.Presentation? = null
-                    var menuPresentation: Div.Presentation? = null
+                    var menuPresentations = ArrayList<Div.Presentation>()
+                    var menuWidth = pole.width  // TODO Use screen width
 
                     init {
                         Log.d(name, "init")
@@ -163,8 +165,13 @@ object Gx {
 
                     override fun onCancel() {
                         Log.d(name, "onCancel")
-                        menuPresentation?.cancel()
+                        cancelMenuPresentations()
                         launcherPresentation?.cancel()
+                    }
+
+                    private fun cancelMenuPresentations() {
+                        menuPresentations.forEach { it.cancel() }
+                        menuPresentations.clear()
                     }
 
                     override fun onAlreadyCancelled() {
@@ -175,47 +182,56 @@ object Gx {
                         Log.d(name, "presentLauncher")
                         val item = items[index].padVertical(QUARTER_FINGER)
                         val launcher = item.placeBefore(moreIndicator, 1, .5f).enableTap("launcher")
-                        menuPresentation?.cancel()
+                        cancelMenuPresentations()
                         launcherPresentation?.cancel()
                         launcherPresentation = launcher.present(human, pole, object : Div.ForwardingObserver(presenter) {
                             override fun onReaction(reaction: Reaction) {
                                 if (reaction is TapReaction<*>) {
                                     Log.d(name, "Launcher TapReaction $reaction")
-                                    presentMenu()
+                                    presentMenu(Div0.EMPTY, 0, 0f, emptyMap())
                                 }
                             }
                         })
                         Log.d(name, "presentLauncher done")
                     }
 
-                    fun presentMenu() {
-                        Log.d(name, "presentMenu")
-                        var menu: Div0? = null
-                        items.forEachIndexed { index, item ->
-                            val paddedItem = item.padVertical(THIRD_FINGER).enableTap(index)
-                            menu = menu?.expandDown(divider)?.expandDown(paddedItem) ?: paddedItem
-                        }
-                        menu = menu
-                                ?.padVertical(Sizelet.READABLE)
-                                ?.placeBefore(colorColumn(Sizelet.PREVIOUS, WHITE), 1)
-                                ?: return
-
-                        menuPresentation?.cancel()
-                        menuPresentation = pole.present(menu!!, object : Div.ForwardingObserver(presenter) {
-                            override fun onHeight(height: Float) {
-                                // Do nothing.  Menu height is not the dropdown height.
-                            }
-
-                            override fun onReaction(reaction: Reaction) {
-                                if (reaction is TapReaction<*>) {
-                                    Log.d(name, "Menu TapReaction $reaction")
-                                    menuPresentation?.cancel()
-                                    index = reaction.tag as Int
-                                    presentLauncher()
-                                    presenter.onReaction(ItemSelectionReaction(name, index))
+                    fun presentMenu(menu: Div0, addIndex: Int, previousHeight: Float, midItems: Map<Int, Float>) {
+                        Log.d(name, "presentMenu $addIndex")
+                        if (addIndex < items.size) {
+                            val paddedItem = items[addIndex].padVertical(THIRD_FINGER).enableTap(addIndex)
+                            val nextMenu = if (addIndex == 0) menu.expandDown(paddedItem) else menu.expandDown(divider).expandDown(paddedItem)
+                            val delayPole = pole.withDelay().withFixedWidth(menuWidth)
+                            menuPresentations.add(nextMenu.present(human, delayPole, object : Div.ForwardingObserver(presenter) {
+                                override fun onHeight(height: Float) {
+                                    val midItem = previousHeight + (height - previousHeight) / 2
+                                    val nextMidItems = midItems.plus(Pair(addIndex, midItem))
+                                    presentMenu(nextMenu, addIndex + 1, height, nextMidItems)
                                 }
-                            }
-                        })
+                            }))
+                        } else {
+                            val padding = Sizelet.READABLE
+                            val paddedMenu = menu
+                                    .padVertical(padding)
+                                    .placeBefore(colorColumn(Sizelet.PREVIOUS, WHITE), 1)
+                            val selectedMidItem = midItems[index] ?: 0f
+                            val offset = previousHeight / 2 - selectedMidItem
+
+                            menuPresentations.add(pole.present(paddedMenu, offset, object : Div.ForwardingObserver(presenter) {
+                                override fun onHeight(height: Float) {
+                                    // Do nothing.  Menu height is not the dropdown height.
+                                }
+
+                                override fun onReaction(reaction: Reaction) {
+                                    if (reaction is TapReaction<*>) {
+                                        Log.d(name, "Menu TapReaction $reaction")
+                                        cancelMenuPresentations()
+                                        index = reaction.tag as Int
+                                        presentLauncher()
+                                        presenter.onReaction(ItemSelectionReaction(name, index))
+                                    }
+                                }
+                            }))
+                        }
                     }
                 })
             }

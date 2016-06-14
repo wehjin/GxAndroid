@@ -50,7 +50,7 @@ public class ScreenChain implements Screen {
 
     @NonNull
     @Override
-    public Div.Presentation present(@NonNull Div0 div, @NonNull Div.Observer observer) {
-        return basis.present(div, observer);
+    public Div.Presentation present(@NonNull Div0 div, float offset, @NonNull Div.Observer observer) {
+        return basis.present(div, offset, observer);
     }
 }

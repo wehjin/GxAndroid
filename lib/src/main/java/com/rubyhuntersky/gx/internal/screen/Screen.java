@@ -32,5 +32,5 @@ public interface Screen {
     Removable addSurface(@NonNull Frame frame, @NonNull Jester jester);
 
     @NonNull
-    Div.Presentation present(@NonNull Div0 div, @NonNull Div.Observer observer);
+    Div.Presentation present(@NonNull Div0 div, float offset, @NonNull Div.Observer observer);
 }
