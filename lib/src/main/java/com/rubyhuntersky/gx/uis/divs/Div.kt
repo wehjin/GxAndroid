@@ -73,31 +73,17 @@ interface Div {
     }
 
     abstract class BooleanPresentation : Presentation, BooleanCancelable() {
-        init {
-            onPresent()
-        }
-
-        abstract protected fun onPresent()
     }
 
     abstract class PresenterPresentation(val presenter: Presenter) : BooleanPresentation() {
-
         val human = presenter.human
         val pole = presenter.pole
-
-        final override fun onPresent() {
-            // Do nothing.  Block further overrides because pole and human as not ready at the time this is called.
-        }
     }
 
 
     class BasePresenter(override val human: Human, override val pole: Pole, private val observer: Observer) : Presenter, BooleanPresentation() {
 
         val presentations = mutableSetOf<Cancelable>()
-
-        override fun onPresent() {
-            // Do nothing
-        }
 
         override fun addPresentation(presentation: Div.Presentation) {
             if (isCancelled) {

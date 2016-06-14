@@ -1,14 +1,17 @@
 package com.rubyhuntersky.gx.android
 
+import android.app.Dialog
+import android.os.Bundle
+import android.support.v4.app.DialogFragment
+import android.support.v4.app.FragmentActivity
+import android.support.v4.app.FragmentManager
 import android.support.v4.view.MotionEventCompat.getX
 import android.support.v4.view.MotionEventCompat.getY
 import android.support.v4.view.ViewCompat.setElevation
 import android.util.Log
-import android.view.Gravity
-import android.view.MotionEvent
-import android.view.View
+import android.view.*
+import android.view.Window.FEATURE_NO_TITLE
 import android.widget.FrameLayout
-import android.widget.FrameLayout.LayoutParams.MATCH_PARENT
 import android.widget.TextView
 import com.rubyhuntersky.gx.Human
 import com.rubyhuntersky.gx.R
@@ -27,7 +30,7 @@ import com.rubyhuntersky.gx.uis.divs.Div
 import com.rubyhuntersky.gx.uis.divs.Div0
 import java.util.*
 
-class FrameLayoutScreen(val frameLayout: FrameLayout, val human: Human) : Screen {
+class FrameLayoutScreen(val frameLayout: FrameLayout, val human: Human, val activity: FragmentActivity) : Screen {
 
     val tag = "${FrameLayoutScreen::class.java.simpleName}${this.hashCode()}"
     val context = frameLayout.context
@@ -40,52 +43,74 @@ class FrameLayoutScreen(val frameLayout: FrameLayout, val human: Human) : Screen
         frameLayout.setOnTouchListener(surfaceController.newTouchListener)
     }
 
-    override fun present(div: Div0, observer: Div.Observer): Div.Presentation {
-        return object : Div.BooleanPresentation() {
+    class DialogFragmentDivPresentation(val activity: FragmentActivity, val fragmentManager: FragmentManager, val viewWidth: Int,
+                                        val div: Div0, val human: Human, val observer: Div.Observer) : Div.BooleanPresentation() {
+        val tag = DialogFragmentDivPresentation::class.java.simpleName
+        val dialogFragmentTag = "DivFragment${this@DialogFragmentDivPresentation.hashCode()}"
 
-            var subFrame: FrameLayout? = null
-            var subPresentation: Div.Presentation? = null
+        init {
+            Log.d(tag, "init $viewWidth")
+            val dialogFragment: DialogFragment = object : DialogFragment() {
 
-            override fun onPresent() {
-                subFrame = object : FrameLayout(context) {
-                    private val screen = FrameLayoutScreen(this, human)
+                var pole: Pole? = null
+                var presentation: Div.Presentation? = null
+                var viewHeight: Int = 1
 
-                    init {
-                        setBackgroundColor(0xc0000000.toInt())
-                        setElevation(this, 100f) // TODO set real elevation
-                    }
-
-                    override fun onLayout(changed: Boolean, left: Int, top: Int, right: Int, bottom: Int) {
-                        super.onLayout(changed, left, top, right, bottom)
-                        if (changed) {
-                            this.postDelayed({ onWidth(right - left) }, 1)
-                        }
-                    }
-
-                    fun onWidth(width: Int) {
-                        val pole = Pole(width.toFloat(), 0f, 0, screen).withShift();
-                        subPresentation?.cancel()
-                        subPresentation = div.padHorizontal(Sizelet.DOUBLE_READABLE)
-                                .present(human, pole, object : Div.ForwardingObserver(observer) {
-                                    override fun onHeight(height: Float) {
-                                        val extraHeight = subFrame!!.height - height
-                                        pole.doShift(0f, extraHeight / 3)
-                                        super.onHeight(height)
-                                    }
-                                })
-                    }
+                override fun onCreateDialog(savedInstanceState: Bundle?): Dialog {
+                    val dialog = super.onCreateDialog(savedInstanceState)
+                    dialog.window.requestFeature(FEATURE_NO_TITLE);
+                    return dialog
                 }
 
-                Log.d(tag, "subpresent ${subFrame!!.hashCode()}")
-                frameLayout.addView(subFrame, MATCH_PARENT, MATCH_PARENT)
-            }
+                override fun onCreateView(inflater: LayoutInflater?, container: ViewGroup?, savedInstanceState: Bundle?): View {
+                    val view: FrameLayout = object : FrameLayout(this@DialogFragmentDivPresentation.activity) {
+                        init {
+                            setBackgroundColor(0x80FF0000.toInt())
+                        }
 
-            override fun onCancel() {
-                subPresentation?.cancel()
-                frameLayout.removeView(subFrame!!)
-                Log.d(tag, "subpresent cancel ${subFrame!!.hashCode()}")
+                        override fun onMeasure(widthMeasureSpec: Int, heightMeasureSpec: Int) {
+                            super.onMeasure(widthMeasureSpec, heightMeasureSpec)
+                            Log.d(this@DialogFragmentDivPresentation.tag, "onMeasure ${MeasureSpec.toString(widthMeasureSpec)} ${MeasureSpec.toString(heightMeasureSpec)} $viewWidth $viewHeight")
+                            setMeasuredDimension(viewWidth, viewHeight)
+                        }
+                    }
+                    container?.addView(view)
+                    pole = Pole(viewWidth.toFloat(), 0f, 100, FrameLayoutScreen(view, human, activity))
+                    return view
+                }
+
+                override fun onResume() {
+                    super.onResume()
+                    presentation = div.present(human, pole!!, object : Div.ForwardingObserver(observer) {
+                        override fun onHeight(height: Float) {
+                            val divHeight = height.toInt()
+                            Log.d(this@DialogFragmentDivPresentation.tag, "onHeight $divHeight")
+                            if (viewHeight != divHeight) {
+                                viewHeight = divHeight
+                                view?.requestLayout()
+                            }
+                            super.onHeight(height)
+                        }
+                    })
+                }
+
+                override fun onPause() {
+                    presentation?.cancel()
+                    super.onPause()
+                }
             }
+            dialogFragment.show(fragmentManager, dialogFragmentTag)
         }
+
+        override fun onCancel() {
+            val dialogFragment = fragmentManager.findFragmentByTag(dialogFragmentTag) as DialogFragment?
+            Log.d(tag, "onCancel $dialogFragment")
+            dialogFragment?.dismiss()
+        }
+    }
+
+    override fun present(div: Div0, observer: Div.Observer): Div.Presentation {
+        return DialogFragmentDivPresentation(activity, activity.supportFragmentManager, frameLayout.width, div, human, observer)
     }
 
     override fun addSurface(frame: Frame, jester: Jester): Removable {

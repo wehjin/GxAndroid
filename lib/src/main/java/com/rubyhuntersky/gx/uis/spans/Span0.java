@@ -51,9 +51,7 @@ abstract public class Span0 implements Ui0<Bar> {
         final float anchor = .5f;
         shiftBar.doShift(extraWidth * anchor, 0);
         return new Div.BooleanPresentation() {
-
-            @Override
-            protected void onPresent() {
+            {
                 observer.onHeight(height);
             }
 

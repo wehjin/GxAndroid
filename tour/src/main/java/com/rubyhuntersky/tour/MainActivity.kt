@@ -51,7 +51,7 @@ open class MainActivity : AppCompatActivity() {
 
     fun onWidth(frameLayout: FrameLayout, left: Int, right: Int) {
         Log.d(tag, "onWidth left $left right $right")
-        val pole = Pole((right - left).toFloat(), 0f, 0, FrameLayoutScreen(frameLayout, human))
+        val pole = Pole((right - left).toFloat(), 0f, 0, FrameLayoutScreen(frameLayout, human, this))
 
         data class Product(val name: String, val price: Float) {
             val nameAndPrice = "$name $price"
