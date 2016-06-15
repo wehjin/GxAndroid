@@ -78,8 +78,8 @@ class ShiftPole(original: Pole) : Pole(original), ShiftDevice<Pole> {
         private fun realizeShiftedSurface(horizontal: Float, vertical: Float) {
             val shiftedFrame = frame.withShift(horizontal, vertical)
             val shiftedJester = object : Jester {
-                override fun getContact(spot: Spot): Jester.Contact? {
-                    val contact = jester.getContact(spot.shifted(-horizontal, -vertical, 0f))
+                override fun getContact(spot: Spot, frameOffset: Spot): Jester.Contact? {
+                    val contact = jester.getContact(spot.shifted(-horizontal, -vertical, 0f), frameOffset)
                     return object : Jester.Contact {
                         override fun doCancel() {
                             contact!!.doCancel()

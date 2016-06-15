@@ -9,7 +9,7 @@ import com.rubyhuntersky.gx.basics.Spot
 
 interface Jester {
 
-    fun getContact(spot: Spot): Contact?;
+    fun getContact(spot: Spot, frameOffset: Spot): Contact?;
 
     interface Contact {
 

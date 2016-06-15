@@ -8,6 +8,9 @@ package com.rubyhuntersky.gx.basics
 
 data class Range(val start: Float, val end: Float) {
 
+    val mid: Float
+        get() = (start + end) / 2
+
     fun toLength(): Float {
         return end - start
     }

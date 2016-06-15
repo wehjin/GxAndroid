@@ -10,6 +10,9 @@ data class Frame(val horizontal: Range, val vertical: Range, val elevation: Int)
 
     constructor(width: Float, height: Float, elevation: Int) : this(Range.of(0f, width), Range.of(0f, height), elevation)
 
+    val mid: Spot
+        get() = Spot(horizontal.mid, vertical.mid, elevation.toFloat())
+
     fun withVerticalShift(shift: Float): Frame {
         val newVertical = vertical.shift(shift)
         if (newVertical === vertical) {

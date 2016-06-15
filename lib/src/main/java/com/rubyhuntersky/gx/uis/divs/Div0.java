@@ -50,12 +50,12 @@ public abstract class Div0 implements Div {
         };
     }
 
-    public <T> Div0 enableTap(final T name) {
+    public Div0 enableTap(final String name) {
         final Div0 upstream = this;
         return create(new Div.OnPresent() {
             @Override
             public void onPresent(@NonNull final Div.Presenter presenter) {
-                presenter.addPresentation(new TapPresenterPresentation<>(upstream, name, presenter));
+                presenter.addPresentation(new TapPresenterPresentation(upstream, name, presenter));
             }
         });
     }

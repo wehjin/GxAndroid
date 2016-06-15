@@ -41,7 +41,16 @@ class FrameLayoutScreen(val frameLayout: FrameLayout, val human: Human, val acti
     val textRuler = TextRuler(context)
     val shapeRuler = ShapeRuler(context)
     val patchController = PatchController(frameLayout)
-    val surfaceController = TouchController(human, object : Div.Observer {
+    val statusBarHeight: Int get() {
+        val resourceId = context.resources.getIdentifier("status_bar_height", "dimen", "android");
+        if (resourceId > 0) {
+            return context.resources.getDimensionPixelSize(resourceId);
+        } else {
+            return 0;
+        }
+    }
+    val displayHeight = context.resources.displayMetrics.heightPixels + statusBarHeight
+    val surfaceController = TouchController(human, displayHeight, object : Div.Observer {
         override fun onHeight(height: Float) {
         }
 
@@ -53,6 +62,7 @@ class FrameLayoutScreen(val frameLayout: FrameLayout, val human: Human, val acti
         override fun onError(throwable: Throwable) {
         }
     })
+
 
     init {
         frameLayout.setOnTouchListener(surfaceController.newTouchListener)
@@ -213,7 +223,7 @@ class FrameLayoutScreen(val frameLayout: FrameLayout, val human: Human, val acti
         }
     }
 
-    class TouchController(val human: Human, val observer: Div.Observer) {
+    class TouchController(val human: Human, val displayHeight: Int, val observer: Div.Observer) {
         companion object {
             val tag = TouchController::class.java.simpleName
         }
@@ -227,7 +237,7 @@ class FrameLayoutScreen(val frameLayout: FrameLayout, val human: Human, val acti
             val spot = Spot(getX(motionEvent, 0), getY(motionEvent, 0), 0f)
             when (motionEvent.action) {
                 MotionEvent.ACTION_DOWN -> {
-                    onTouchDown(spot)
+                    onTouchDown(spot, view)
                 }
                 MotionEvent.ACTION_CANCEL -> {
                     onTouchCancel()
@@ -256,13 +266,24 @@ class FrameLayoutScreen(val frameLayout: FrameLayout, val human: Human, val acti
             }
         }
 
-        private fun onTouchDown(spot: Spot) {
+        private val View.locationOnScreen: Spot get() {
+            val location = intArrayOf(0, 0)
+            getLocationOnScreen(location)
+            return Spot(location[0].toFloat(), location[1].toFloat(), 0f)
+        }
+
+        private fun onTouchDown(spot: Spot, view: View) {
             Log.d(tag, "Action Down $jesterItems $this")
             contacts.cancelAndClear()
+            val viewSpotOnScreen = view.locationOnScreen
+            Log.d(tag, "ViewSpotOnScreen $viewSpotOnScreen")
+            val midScreen = Spot(0f, displayHeight / 2f, 0f)
+            Log.d(tag, "MidScreen $midScreen")
             for ((frame, jester) in jesterItems) {
                 Log.v(tag, "Spot $spot, Frame $frame")
                 if (spot.intersects(frame)) {
-                    val contact = jester.getContact(spot)
+                    val midFrameOnScreen = viewSpotOnScreen.plus(frame.mid)
+                    val contact = jester.getContact(spot, midFrameOnScreen.minus(midScreen))
                     Log.v(tag, "Contact $contact")
                     if (contact != null) {
                         contacts.add(contact)
@@ -270,7 +291,7 @@ class FrameLayoutScreen(val frameLayout: FrameLayout, val human: Human, val acti
                 }
             }
             if (contacts.isEmpty()) {
-                contacts.add(TapContact(spot, observer, human, "Background"))
+                contacts.add(TapContact(spot, observer, human, "Background", Spot(0f, 0f, 0f)))
             }
         }
 

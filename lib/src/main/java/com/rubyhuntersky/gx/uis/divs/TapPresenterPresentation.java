@@ -13,14 +13,14 @@ import org.jetbrains.annotations.Nullable;
  * @author Jeffrey Yu
  * @since 6/14/16.
  */
-public class TapPresenterPresentation<T> extends Div.PresenterPresentation {
+public class TapPresenterPresentation extends Div.PresenterPresentation {
 
-    private final T name;
+    private final String name;
     private final Div.Presenter presenter;
     private Div.Presentation presentation;
     private Removable surface;
 
-    public TapPresenterPresentation(Div0 upstream, T name, Div.Presenter presenter) {
+    public TapPresenterPresentation(Div0 upstream, String name, Div.Presenter presenter) {
         super(presenter);
         this.name = name;
         this.presenter = presenter;
@@ -43,8 +43,12 @@ public class TapPresenterPresentation<T> extends Div.PresenterPresentation {
                                   new Jester() {
                                       @Nullable
                                       @Override
-                                      public Contact getContact(@NotNull final Spot downSpot) {
-                                          return new TapContact<>(downSpot, presenter, presenter.getHuman(), name);
+                                      public Contact getContact(@NotNull final Spot downSpot, @NotNull final Spot surfaceOffset) {
+                                          return new TapContact(downSpot,
+                                                                presenter,
+                                                                presenter.getHuman(),
+                                                                name,
+                                                                surfaceOffset);
                                       }
                                   });
     }

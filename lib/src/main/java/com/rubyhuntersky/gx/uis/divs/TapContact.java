@@ -15,17 +15,19 @@ import org.jetbrains.annotations.NotNull;
  * @author Jeffrey Yu
  * @since 6/14/16.
  */
-public class TapContact<T> implements Jester.Contact {
+public class TapContact implements Jester.Contact {
     private final Spot downSpot;
     private final Div.Observer observer;
-    private final T label;
+    private final String label;
+    private final Spot surfaceOffset;
     private final int maxMoveSquared;
 
     // TODO Take a lambda instead of a Div.Observer
-    public TapContact(Spot downSpot, Div.Observer observer, Human human, T label) {
+    public TapContact(Spot downSpot, Div.Observer observer, Human human, String label, Spot surfaceOffset) {
         this.downSpot = downSpot;
         this.observer = observer;
-        this.label = label;
+        this.label = label == null ? "enableTap" : label;
+        this.surfaceOffset = surfaceOffset;
         final int maxMove = (int) (human.fingerPixels / 4);
         this.maxMoveSquared = maxMove * maxMove;
     }
@@ -65,7 +67,7 @@ public class TapContact<T> implements Jester.Contact {
     public void doUp(@NotNull Spot spot) {
         long time = System.currentTimeMillis();
         Log.d(Div0.TAG, "doUp " + time);
-        observer.onReaction(new TapReaction<>(label, "enableTap", time));
+        observer.onReaction(new TapReaction(label, time, surfaceOffset));
     }
 
     private boolean isOutOfBounds(@NotNull Spot spot) {

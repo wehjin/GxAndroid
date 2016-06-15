@@ -10,6 +10,7 @@ import com.rubyhuntersky.coloret.Coloret.WHITE
 import com.rubyhuntersky.gx.basics.Frame
 import com.rubyhuntersky.gx.basics.Sizelet
 import com.rubyhuntersky.gx.basics.Sizelet.*
+import com.rubyhuntersky.gx.basics.Spot
 import com.rubyhuntersky.gx.basics.TextStylet
 import com.rubyhuntersky.gx.internal.patches.Patch
 import com.rubyhuntersky.gx.internal.presenters.SwitchDivPresenter
@@ -186,26 +187,27 @@ object Gx {
                         launcherPresentation?.cancel()
                         launcherPresentation = launcher.present(human, pole, object : Div.ForwardingObserver(presenter) {
                             override fun onReaction(reaction: Reaction) {
-                                if (reaction is TapReaction<*>) {
+                                if (reaction is TapReaction) {
                                     Log.d(name, "Launcher TapReaction $reaction")
-                                    presentMenu(Div0.EMPTY, 0, 0f, emptyMap())
+                                    val surfaceOffset = reaction.surfaceOffset
+                                    presentMenu(Div0.EMPTY, 0, 0f, emptyMap(), surfaceOffset)
                                 }
                             }
                         })
                         Log.d(name, "presentLauncher done")
                     }
 
-                    fun presentMenu(menu: Div0, addIndex: Int, previousHeight: Float, midItems: Map<Int, Float>) {
+                    fun presentMenu(menu: Div0, addIndex: Int, previousHeight: Float, midItems: Map<Int, Float>, surfaceOffset: Spot) {
                         Log.d(name, "presentMenu $addIndex")
                         if (addIndex < items.size) {
-                            val paddedItem = items[addIndex].padVertical(THIRD_FINGER).enableTap(addIndex)
+                            val paddedItem = items[addIndex].padVertical(THIRD_FINGER).enableTap(addIndex.toString())
                             val nextMenu = if (addIndex == 0) menu.expandDown(paddedItem) else menu.expandDown(divider).expandDown(paddedItem)
                             val delayPole = pole.withDelay().withFixedWidth(menuWidth)
                             menuPresentations.add(nextMenu.present(human, delayPole, object : Div.ForwardingObserver(presenter) {
                                 override fun onHeight(height: Float) {
                                     val midItem = previousHeight + (height - previousHeight) / 2
                                     val nextMidItems = midItems.plus(Pair(addIndex, midItem))
-                                    presentMenu(nextMenu, addIndex + 1, height, nextMidItems)
+                                    presentMenu(nextMenu, addIndex + 1, height, nextMidItems, surfaceOffset)
                                 }
                             }))
                         } else {
@@ -214,18 +216,18 @@ object Gx {
                                     .padVertical(padding)
                                     .placeBefore(colorColumn(Sizelet.PREVIOUS, WHITE), 1)
                             val selectedMidItem = midItems[index] ?: 0f
-                            val offset = previousHeight / 2 - selectedMidItem
-
+                            val centeringOffset = previousHeight / 2 - selectedMidItem
+                            val offset = centeringOffset + surfaceOffset.y
                             menuPresentations.add(pole.present(paddedMenu, offset, object : Div.ForwardingObserver(presenter) {
                                 override fun onHeight(height: Float) {
                                     // Do nothing.  Menu height is not the dropdown height.
                                 }
 
                                 override fun onReaction(reaction: Reaction) {
-                                    if (reaction is TapReaction<*>) {
+                                    if (reaction is TapReaction) {
                                         Log.d(name, "Menu TapReaction $reaction")
                                         cancelMenuPresentations()
-                                        index = reaction.tag as Int
+                                        index = reaction.source.toInt()
                                         presentLauncher()
                                         presenter.onReaction(ItemSelectionReaction(name, index))
                                     }

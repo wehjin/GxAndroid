@@ -17,4 +17,12 @@ data class Spot(val x: Float, val y: Float, val z: Float) {
     }
 
     fun shifted(shiftX: Float, shiftY: Float, shiftZ: Float): Spot = Spot(x + shiftX, y + shiftY, z + shiftZ)
+
+    fun plus(add: Spot): Spot {
+        return Spot(x + add.x, y + add.y, z + add.z)
+    }
+
+    fun minus(subtract: Spot): Spot {
+        return Spot(x - subtract.x, y - subtract.y, z - subtract.z)
+    }
 }
