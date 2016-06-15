@@ -4,13 +4,9 @@ import android.support.annotation.NonNull;
 
 import com.rubyhuntersky.gx.Gx;
 import com.rubyhuntersky.gx.Human;
-import com.rubyhuntersky.gx.basics.Frame;
-import com.rubyhuntersky.gx.basics.Removable;
 import com.rubyhuntersky.gx.basics.Sizelet;
-import com.rubyhuntersky.gx.basics.Spot;
 import com.rubyhuntersky.gx.devices.poles.Pole;
 import com.rubyhuntersky.gx.devices.poles.ShiftPole;
-import com.rubyhuntersky.gx.internal.surface.Jester;
 import com.rubyhuntersky.gx.reactions.Reaction;
 import com.rubyhuntersky.gx.uis.divs.operations.ExpandDownDivOperation1;
 import com.rubyhuntersky.gx.uis.divs.operations.ExpandVerticalDivOperation0;
@@ -18,7 +14,6 @@ import com.rubyhuntersky.gx.uis.divs.operations.PadHorizontalDivOperation0;
 import com.rubyhuntersky.gx.uis.divs.operations.PlaceBeforeDivOperation0;
 
 import org.jetbrains.annotations.NotNull;
-import org.jetbrains.annotations.Nullable;
 
 /**
  * @author wehjin
@@ -55,52 +50,12 @@ public abstract class Div0 implements Div {
         };
     }
 
-    public <T> Div0 enableTap(final T label) {
+    public <T> Div0 enableTap(final T name) {
         final Div0 upstream = this;
         return create(new Div.OnPresent() {
             @Override
             public void onPresent(@NonNull final Div.Presenter presenter) {
-                presenter.addPresentation(new Div.PresenterPresentation(presenter) {
-
-                    private Presentation presentation;
-                    private Removable surface;
-
-                    {
-                        presentation = upstream.present(getHuman(), getPole(), new ForwardingObserver(presenter) {
-                            @Override
-                            public void onHeight(float height) {
-                                updateSurface(height);
-                                super.onHeight(height);
-                            }
-                        });
-
-                    }
-
-                    private void updateSurface(float height) {
-                        if (surface != null) {
-                            surface.remove();
-                        }
-                        final Pole pole = getPole();
-                        surface = pole.addSurface(new Frame(pole.getWidth(), height, pole.getElevation()),
-                                                  new Jester() {
-                                                      @Nullable
-                                                      @Override
-                                                      public Contact getContact(@NotNull final Spot downSpot) {
-                                                          return new TapContact<>(downSpot,
-                                                                                  presenter, presenter.getHuman(),
-                                                                                  label);
-                                                      }
-                                                  });
-                    }
-
-                    @Override
-                    public void onCancel() {
-                        if (surface != null) {
-                            surface.remove();
-                        }
-                        presentation.cancel();
-                    }
-                });
+                presenter.addPresentation(new TapPresenterPresentation<>(upstream, name, presenter));
             }
         });
     }
