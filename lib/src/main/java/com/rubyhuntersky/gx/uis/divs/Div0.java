@@ -86,7 +86,9 @@ public abstract class Div0 implements Div {
                                                       @Nullable
                                                       @Override
                                                       public Contact getContact(@NotNull final Spot downSpot) {
-                                                          return new TapContact<>(downSpot, presenter, label);
+                                                          return new TapContact<>(downSpot,
+                                                                                  presenter, presenter.getHuman(),
+                                                                                  label);
                                                       }
                                                   });
                     }

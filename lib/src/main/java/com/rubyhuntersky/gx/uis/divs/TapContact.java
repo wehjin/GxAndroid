@@ -21,11 +21,6 @@ public class TapContact<T> implements Jester.Contact {
     private final T label;
     private final int maxMoveSquared;
 
-    // TODO Remove this constructor
-    public TapContact(Spot downSpot, Div.Presenter presenter, T label) {
-        this(downSpot, presenter, presenter.getHuman(), label);
-    }
-
     // TODO Take a lambda instead of a Div.Observer
     public TapContact(Spot downSpot, Div.Observer observer, Human human, T label) {
         this.downSpot = downSpot;
