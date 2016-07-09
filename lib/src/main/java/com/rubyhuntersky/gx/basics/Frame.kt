@@ -43,4 +43,10 @@ data class Frame(val horizontal: Range, val vertical: Range, val elevation: Int)
         val newVertical = vertical.withLength(verticalLength)
         return Frame(horizontal, newVertical, elevation)
     }
+
+    fun withOutsetAndShift(padding: Float): Frame {
+        val newHorizontal = horizontal.withLength(width + 2 * padding)
+        val newVertical = vertical.withLength(height + 2 * padding)
+        return Frame(newHorizontal, newVertical, elevation)
+    }
 }

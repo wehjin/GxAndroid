@@ -43,7 +43,9 @@ public class TextRuler {
     }
 
     public TextSize measure(String text, TextStyle textStyle) {
-        return new TextSize(getTextWidth(text, textStyle), getTextHeight(textStyle.typeface, textStyle.typeheight));
+        final float textWidth = getTextWidth(text, textStyle);
+        final TextHeight textHeight = getTextHeight(textStyle.typeface, textStyle.typeheight);
+        return new TextSize(textWidth, textHeight);
     }
 
     private float getTextWidth(String textString, TextStyle textStyle) {
