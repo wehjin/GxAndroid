@@ -10,8 +10,13 @@ data class Frame(val horizontal: Range, val vertical: Range, val elevation: Int)
 
     constructor(width: Float, height: Float, elevation: Int) : this(Range.of(0f, width), Range.of(0f, height), elevation)
 
-    val mid: Spot
-        get() = Spot(horizontal.mid, vertical.mid, elevation.toFloat())
+    val mid: Spot by lazy { Spot(horizontal.mid, vertical.mid, elevation.toFloat()) }
+    val width: Float by lazy { horizontal.toLength() }
+    val height: Float by lazy { vertical.toLength() }
+    val left: Float by lazy { horizontal.start }
+    val right: Float by lazy { horizontal.end }
+    val top: Float by lazy { vertical.start }
+    val bottom: Float by lazy { vertical.end }
 
     fun withVerticalShift(shift: Float): Frame {
         val newVertical = vertical.shift(shift)
