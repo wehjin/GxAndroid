@@ -186,7 +186,7 @@ open class MainActivity : AppCompatActivity() {
                                 .expandDown(divisionDivider)
                                 .expandDown(gapColumn(READABLE))
                                 .expandDown(textColumn("${purchase.sharesToBuy} shares", IMPORTANT_DARK))
-                                .expandDown(gapColumn(TRIPLE_IMPORTANT))
+                                .expandDown(gapColumn(DOUBLE_IMPORTANT))
                                 .expandDown(purchase.accountMenu)
                                 .expandDown(if (purchase.shortfall > 0 && purchase.salableAssets.size > 0) {
                                     purchase.assetMenu
@@ -196,7 +196,7 @@ open class MainActivity : AppCompatActivity() {
                                 } else {
                                     Div0.EMPTY
                                 })
-                                .expandVertical(HALF_FINGER)
+                                .expandVertical(THIRD_FINGER)
 
                         presentation.cancel()
                         presentation = purchaseUi.present(presenter.human, presenter.pole, object : Div.ForwardingObserver(presenter) {
