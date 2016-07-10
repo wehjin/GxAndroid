@@ -1,6 +1,7 @@
 package com.rubyhuntersky.gx.android
 
 import android.content.Context
+import android.support.v4.content.ContextCompat
 import android.support.v4.view.ViewCompat
 import android.util.TypedValue
 import android.view.Gravity
@@ -27,5 +28,10 @@ fun TextShape.toTextView(context: Context): TextView {
 var View.elevationCompat: Float
     get() = this.elevation
     set(value) = ViewCompat.setElevation(this, value)
+
+fun Context.getColorCompat(colorId: Int): Int {
+    return ContextCompat.getColor(this, colorId)
+}
+
 
  

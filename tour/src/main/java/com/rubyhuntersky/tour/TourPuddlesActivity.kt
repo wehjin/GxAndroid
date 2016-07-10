@@ -2,7 +2,6 @@ package com.rubyhuntersky.tour
 
 import android.graphics.Typeface
 import android.os.Bundle
-import android.support.v4.content.ContextCompat
 import android.support.v7.app.AppCompatActivity
 import android.util.Log
 import android.view.View
@@ -10,11 +9,13 @@ import android.widget.FrameLayout
 import com.rubyhuntersky.gx.Human
 import com.rubyhuntersky.gx.android.TextRuler
 import com.rubyhuntersky.gx.android.elevationCompat
+import com.rubyhuntersky.gx.android.getColorCompat
 import com.rubyhuntersky.gx.android.toTextView
 import com.rubyhuntersky.gx.basics.*
 import com.rubyhuntersky.gx.internal.shapes.Shape
 import com.rubyhuntersky.gx.internal.shapes.TextShape
 import com.rubyhuntersky.gx.puddles.Puddle
+import com.rubyhuntersky.gx.puddles.colorPuddle
 import com.rubyhuntersky.gx.puddles.textLinePuddle
 import com.rubyhuntersky.gx.reactions.Reaction
 
@@ -51,11 +52,13 @@ class TourPuddlesActivity : AppCompatActivity(), Puddle.Viewer {
     override fun addPatch(id: Long, position: Frame, color: Int, shape: Shape) {
         if (shape is TextShape) {
             val textView = shape.toTextView(this)
-            val padding = shape.textSize.textHeight.topPadding.toInt()
-            textView.setPadding(0, padding, 0, padding)
-            val newTop = position.top - padding
-            val newBottom = position.bottom + padding
-            addPatchView(textView, id, position.left, newTop, position.right, newBottom, position.elevation)
+            val textHeight = shape.textSize.textHeight.height
+            val padding = textHeight / 2f
+            val shift = shape.textSize.textHeight.topPadding
+            textView.setPadding(0, padding.toInt(), 0, padding.toInt())
+            val newTop = position.top - padding - shift
+            val newHeight = position.height + 2 * padding + shift
+            addPatchView(textView, id, position.left, newTop, position.width, newHeight, position.elevation)
         } else {
             val view = View(this)
             view.setBackgroundColor(color)
@@ -90,12 +93,16 @@ class TourPuddlesActivity : AppCompatActivity(), Puddle.Viewer {
         frameView.postDelayed({
             val touchSize = human.fingerPixels
             val spacing = touchSize / 3
-            val color = ContextCompat.getColor(this, R.color.tour1)
+            val textColor = getColorCompat(R.color.tour1)
+            val color = getColorCompat(R.color.tour2)
             val bodyLineHeight = human.textPixels
             val titleLineHeight = bodyLineHeight * 1.25f
-            val textStyle = TextStyle(titleLineHeight, Typeface.DEFAULT_BOLD, color)
-            val text = "Hello"
-            val puddle = textLinePuddle(text, textStyle).padOut(spacing)
+            val textStyle = TextStyle(titleLineHeight, Typeface.DEFAULT_BOLD, textColor)
+            val rightPuddle = colorPuddle(touchSize, touchSize, color)
+            val leftPuddle = textLinePuddle("Hello", textStyle)
+            val puddle = leftPuddle
+                    .poolRight(rightPuddle, 1f)
+                    .padOut(spacing)
             presentation = puddle.present(this, object : Puddle.Director {
                 override fun onPosition(position: Frame) {
                     Log.d(TAG, "Position $position")

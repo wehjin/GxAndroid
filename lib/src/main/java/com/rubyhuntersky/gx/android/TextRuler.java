@@ -8,6 +8,7 @@ import android.graphics.Typeface;
 import android.support.annotation.NonNull;
 import android.util.Log;
 import android.util.Pair;
+import android.util.TypedValue;
 import android.view.Gravity;
 import android.view.View;
 import android.view.ViewGroup;
@@ -51,7 +52,7 @@ public class TextRuler {
     private float getTextWidth(String textString, TextStyle textStyle) {
         TextView ruler = textView;
         ruler.setTypeface(textStyle.typeface);
-        ruler.setTextSize(textStyle.typeheight);
+        ruler.setTextSize(TypedValue.COMPLEX_UNIT_PX, textStyle.typeheight);
         ruler.setText(textString);
         ruler.measure(View.MeasureSpec.UNSPECIFIED, View.MeasureSpec.UNSPECIFIED);
         return ruler.getMeasuredWidth();
@@ -67,7 +68,7 @@ public class TextRuler {
         TextView textView = this.textView;
         textView.setText("E");
         textView.setTypeface(typeface);
-        textView.setTextSize(typeheight);
+        textView.setTextSize(TypedValue.COMPLEX_UNIT_PX, typeheight);
         textView.measure(View.MeasureSpec.UNSPECIFIED, View.MeasureSpec.UNSPECIFIED);
         final Bitmap bitmap = Bitmap.createBitmap(textView.getMeasuredWidth(), textView.getMeasuredHeight(),
                                                   Bitmap.Config.ARGB_8888);

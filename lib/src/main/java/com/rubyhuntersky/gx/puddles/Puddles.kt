@@ -12,7 +12,7 @@ import java.util.*
  * @since 7/9/16.
  */
 
-private val idGenerator = Random()
+val ID_GENERATOR = Random()
 
 val EMPTY_PRESENTATION = object : Puddle.Presentation {
     override fun end() {
@@ -40,11 +40,10 @@ fun createPuddle(onPresent: (viewer: Puddle.Viewer, director: Puddle.Director) -
 
 fun textLinePuddle(text: String, style: TextStyle): Puddle {
     return createPuddle { viewer, director ->
-        val id = idGenerator.nextLong()
+        val id = ID_GENERATOR.nextLong()
         val textSize = viewer.getTextSize(text, style)
         val shape = TextShape(text, style, textSize)
-        val textHeight = textSize.textHeight
-        val position = Frame(textSize.textWidth, textHeight.height, 0)
+        val position = Frame(textSize.textWidth, textSize.textHeight.height, 0)
         viewer.addPatch(id, position, style.typecolor, shape)
         director.onPosition(position)
         object : Puddle.Presentation {
@@ -57,7 +56,7 @@ fun textLinePuddle(text: String, style: TextStyle): Puddle {
 
 fun colorPuddle(width: Float, height: Float, color: Int): Puddle {
     return createPuddle { viewer, director ->
-        val id = idGenerator.nextLong()
+        val id = ID_GENERATOR.nextLong()
         val position = Frame(width, height, 0)
         viewer.addPatch(id, position, color, FULL_SHAPE)
         director.onPosition(position)
