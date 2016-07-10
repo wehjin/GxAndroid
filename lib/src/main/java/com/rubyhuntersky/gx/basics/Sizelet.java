@@ -15,6 +15,7 @@ public class Sizelet {
     public static final Sizelet THIRD_FINGER = new Sizelet(.3333f, Ruler.FINGERTIP);
     public static final Sizelet QUARTER_FINGER = new Sizelet(.25f, Ruler.FINGERTIP);
     public static final Sizelet QUARTER_READABLE = new Sizelet(.25f, Ruler.READABLE);
+    public static final Sizelet HALF_READABLE = new Sizelet(.5f, Ruler.READABLE);
     public static final Sizelet READABLE = new Sizelet(1f, Ruler.READABLE);
     public static final Sizelet DOUBLE_READABLE = new Sizelet(2f, Ruler.READABLE);
     public static final Sizelet TITLE = new Sizelet(1.8f, Ruler.READABLE);

@@ -15,8 +15,7 @@ import com.rubyhuntersky.gx.Gx.textColumn
 import com.rubyhuntersky.gx.android.AndroidHuman
 import com.rubyhuntersky.gx.android.FrameLayoutScreen
 import com.rubyhuntersky.gx.basics.Sizelet
-import com.rubyhuntersky.gx.basics.Sizelet.FINGER
-import com.rubyhuntersky.gx.basics.Sizelet.READABLE
+import com.rubyhuntersky.gx.basics.Sizelet.*
 import com.rubyhuntersky.gx.basics.TextStylet.IMPORTANT_DARK
 import com.rubyhuntersky.gx.basics.TextStylet.READABLE_DARK
 import com.rubyhuntersky.gx.devices.poles.Pole
@@ -180,14 +179,14 @@ open class MainActivity : AppCompatActivity() {
                     private fun present() {
                         Log.d(tag, "present")
                         val amountLine = textColumn("Buy \$${purchase.amountToSpend}", IMPORTANT_DARK)
-                        val divisionDivider = colorColumn(Sizelet.QUARTER_READABLE, BLACK).padHorizontal(Sizelet.HALF_FINGER)
+                        val divisionDivider = colorColumn(QUARTER_READABLE, BLACK).padHorizontal(HALF_FINGER)
                         val purchaseUi = amountLine
                                 .expandDown(purchase.productMenu)
-                                .expandVertical(READABLE)
+                                .expandVertical(HALF_READABLE)
                                 .expandDown(divisionDivider)
                                 .expandDown(gapColumn(READABLE))
                                 .expandDown(textColumn("${purchase.sharesToBuy} shares", IMPORTANT_DARK))
-                                .expandDown(gapColumn(Sizelet.TRIPLE_IMPORTANT))
+                                .expandDown(gapColumn(TRIPLE_IMPORTANT))
                                 .expandDown(purchase.accountMenu)
                                 .expandDown(if (purchase.shortfall > 0 && purchase.salableAssets.size > 0) {
                                     purchase.assetMenu
@@ -197,7 +196,7 @@ open class MainActivity : AppCompatActivity() {
                                 } else {
                                     Div0.EMPTY
                                 })
-                                .expandVertical(Sizelet.HALF_FINGER)
+                                .expandVertical(HALF_FINGER)
 
                         presentation.cancel()
                         presentation = purchaseUi.present(presenter.human, presenter.pole, object : Div.ForwardingObserver(presenter) {

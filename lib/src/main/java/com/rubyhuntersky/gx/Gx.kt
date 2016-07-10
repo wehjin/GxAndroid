@@ -2,6 +2,7 @@ package com.rubyhuntersky.gx
 
 import android.content.Context
 import android.util.Log
+import android.util.TypedValue
 import android.view.Gravity
 import android.view.View
 import android.widget.TextView
@@ -53,7 +54,7 @@ object Gx {
                     textView.setSingleLine()
                     textView.setTextColor(textStyle.typecolor)
                     textView.typeface = textStyle.typeface
-                    textView.textSize = textStyle.typeheight.toFloat()
+                    textView.setTextSize(TypedValue.COMPLEX_UNIT_PX, textStyle.typeheight.toFloat())
                     textView.text = textString
                     textView.includeFontPadding = false
                     textView.contentDescription = "TextTile"
