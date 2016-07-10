@@ -98,10 +98,11 @@ class TourPuddlesActivity : AppCompatActivity(), Puddle.Viewer {
             val bodyLineHeight = human.textPixels
             val titleLineHeight = bodyLineHeight * 1.25f
             val textStyle = TextStyle(titleLineHeight, Typeface.DEFAULT_BOLD, textColor)
-            val rightPuddle = colorPuddle(touchSize, touchSize, color)
-            val leftPuddle = textLinePuddle("Hello", textStyle)
-            val puddle = leftPuddle
-                    .poolRight(rightPuddle, 1f)
+            val colorPuddle = colorPuddle(touchSize, touchSize, color)
+            val textPuddle = textLinePuddle("Hello", textStyle)
+            val puddle = textPuddle
+                    .poolRight(colorPuddle, .5f)
+                    .poolLeft(colorPuddle, .5f)
                     .padOut(spacing)
             presentation = puddle.present(this, object : Puddle.Director {
                 override fun onPosition(position: Frame) {

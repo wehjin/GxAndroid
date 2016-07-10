@@ -1,4 +1,7 @@
-package com.rubyhuntersky.gx.puddles
+package com.rubyhuntersky.gx.puddles.presentations
+
+import com.rubyhuntersky.gx.puddles.ID_GENERATOR
+import com.rubyhuntersky.gx.puddles.Puddle
 
 /**
  * @author Jeffrey Yu

@@ -3,6 +3,8 @@ package com.rubyhuntersky.gx.puddles
 import com.rubyhuntersky.gx.Human
 import com.rubyhuntersky.gx.basics.*
 import com.rubyhuntersky.gx.internal.shapes.Shape
+import com.rubyhuntersky.gx.puddles.presentations.JoinLeftPresenter
+import com.rubyhuntersky.gx.puddles.presentations.JoinRightPresenter
 import com.rubyhuntersky.gx.reactions.Reaction
 import com.rubyhuntersky.gx.uis.Ui
 
@@ -62,45 +64,13 @@ interface Puddle {
 
     fun poolRight(rightPuddle: Puddle, anchor: Float): Puddle {
         return create({ viewer, director ->
-            val composite = CompositePresentation()
-            val leftViewer = ShiftingViewer(viewer)
-            val rightViewer = ShiftingViewer(viewer)
-            val compositeViewer = object : ProxyViewer(viewer) {
-                var leftPosition: Frame? = null
-                var rightPosition: Frame? = null
-
-                fun onLeftPosition(position: Frame) {
-                    leftPosition = position
-                    update()
-                }
-
-                fun onRightPosition(position: Frame) {
-                    rightPosition = position
-                    update()
-                }
-
-                fun update() {
-                    if (leftPosition == null || rightPosition == null) return
-                    val (leftHeight, rightHeight) = Pair(leftPosition!!.height, rightPosition!!.height)
-                    val (fullWidth, fullHeight) = Pair(leftPosition!!.width + rightPosition!!.width, Math.max(leftHeight, rightHeight))
-                    val (leftMargin, rightMargin) = Pair(fullHeight - leftHeight, fullHeight - rightHeight)
-                    val (leftDown, rightDown) = Pair(anchor * leftMargin, anchor * rightMargin)
-                    leftViewer.shift = Shift(0f, leftDown, 0f)
-                    rightViewer.shift = Shift(leftPosition!!.width, rightDown, 0f)
-                    director.onPosition(Frame(fullWidth, fullHeight, 0))
-                }
-            }
-            composite.add(this@Puddle.present(leftViewer, object : ProxyDirector(director) {
-                override fun onPosition(position: Frame) {
-                    compositeViewer.onLeftPosition(position)
-                }
-            }))
-            composite.add(rightPuddle.present(rightViewer, object : ProxyDirector(director) {
-                override fun onPosition(position: Frame) {
-                    compositeViewer.onRightPosition(position)
-                }
-            }))
-            composite
+            JoinRightPresenter(this@Puddle, rightPuddle, anchor).present(viewer, director)
         })
+    }
+
+    fun poolLeft(leftPuddle: Puddle, anchor: Float): Puddle {
+        return create { viewer, director ->
+            JoinLeftPresenter(this@Puddle, leftPuddle, anchor).present(viewer, director)
+        }
     }
 }
