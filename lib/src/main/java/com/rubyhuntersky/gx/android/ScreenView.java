@@ -5,7 +5,6 @@ import android.support.annotation.NonNull;
 import android.support.v4.view.ViewCompat;
 import android.util.AttributeSet;
 import android.util.Log;
-import android.view.Gravity;
 import android.view.View;
 import android.widget.FrameLayout;
 import android.widget.TextView;
@@ -113,17 +112,11 @@ public class ScreenView extends FrameLayout implements Screen {
 
     @NonNull
     private Patch getTextPatch(Frame frame, TextShape textShape) {
-        final TextView textView = new TextView(getContext());
-        textView.setGravity(Gravity.TOP);
-        textView.setTextColor(textShape.textStyle.typecolor);
-        textView.setTypeface(textShape.textStyle.typeface);
-        textView.setTextSize(textShape.textStyle.typeheight);
-        textView.setText(textShape.textString);
-        textView.setIncludeFontPadding(false);
+        final TextView textView = AndroidKt.toTextView(textShape, getContext());
         final TextHeight textHeight = textShape.textSize.textHeight;
         Frame newFrame = frame.withVerticalShift(-textHeight.topPadding)
-              .withVerticalLength(textHeight.topPadding + textHeight.height);
-        return getViewPatch(textView, newFrame, textHeight.height / 2);
+              .withVerticalLength(textHeight.topPadding + textHeight.height + textHeight.topPadding);
+        return getViewPatch(textView, newFrame, textHeight.height);
     }
 
     @NonNull

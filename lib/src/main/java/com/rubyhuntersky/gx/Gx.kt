@@ -44,7 +44,8 @@ object Gx {
             val textSize = mosaic.measureText(textString, textStyle)
             val frame = Frame(textSize.textWidth, textSize.textHeight.height, mosaic.elevation)
             val textHeight = textSize.textHeight
-            val textFrame = frame.withVerticalShift(-textHeight.topPadding).withVerticalLength(textHeight.topPadding + 1.5f * textHeight.height)
+            val textFrame = frame.withVerticalShift(-textHeight.topPadding)
+                    .withVerticalLength(textHeight.topPadding + textHeight.height + textHeight.topPadding)
             val viewShape = object : ViewShape() {
                 override fun createView(context: Context): View {
                     val textView = TextView(context)

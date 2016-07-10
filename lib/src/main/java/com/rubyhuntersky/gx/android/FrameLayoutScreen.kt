@@ -10,10 +10,12 @@ import android.support.v4.view.MotionEventCompat.getX
 import android.support.v4.view.MotionEventCompat.getY
 import android.support.v4.view.ViewCompat.setElevation
 import android.util.Log
-import android.view.*
+import android.view.LayoutInflater
+import android.view.MotionEvent
+import android.view.View
+import android.view.ViewGroup
 import android.view.Window.FEATURE_NO_TITLE
 import android.widget.FrameLayout
-import android.widget.TextView
 import com.rubyhuntersky.gx.Human
 import com.rubyhuntersky.gx.R
 import com.rubyhuntersky.gx.basics.*
@@ -183,16 +185,11 @@ class FrameLayoutScreen(val frameLayout: FrameLayout, val human: Human, val acti
                 }
                 is TextShape -> {
                     Log.d(tag, "TextShape")
-                    val textView = TextView(context)
-                    textView.gravity = Gravity.TOP
-                    textView.setTextColor(shape.textStyle.typecolor)
-                    textView.typeface = shape.textStyle.typeface
-                    textView.textSize = shape.textStyle.typeheight.toFloat()
-                    textView.text = shape.textString
-                    textView.includeFontPadding = false
+                    val textView = shape.toTextView(context)
                     val textHeight = shape.textSize.textHeight
-                    val newFrame = frame.withVerticalShift(-textHeight.topPadding).withVerticalLength(textHeight.topPadding + textHeight.height)
-                    return addPatch(textView, newFrame, textHeight.height / 2)
+                    val newFrame = frame.withVerticalShift(-textHeight.topPadding)
+                            .withVerticalLength(textHeight.topPadding + textHeight.height + textHeight.topPadding)
+                    return addPatch(textView, newFrame, textHeight.height)
                 }
                 is ViewShape -> {
                     val view = shape.createView(context)
